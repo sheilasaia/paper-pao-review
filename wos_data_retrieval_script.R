@@ -77,7 +77,12 @@ ggplot(data = polyp_pubs_yearly_counts) +
   geom_col(aes(x = year_fix, y = n)) +
   xlab("Year") +
   ylab("Number of WOS Articles w/ Keyword 'polyphosphate' Published") +
-  theme_bw()
+  theme_classic() +
+  theme(axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        axis.text = element_text(size = 12))
 # TODO Ryan suggests to normalize by number of pubs in microbiology or some broader field
 # TODO Theo asked if spikes were from funding cycle (3-years)?
   
