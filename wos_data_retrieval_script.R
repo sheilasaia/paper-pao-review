@@ -9,7 +9,7 @@ library(here)
 
 # define paths 
 # tabular_raw_data_path <- here("data", "tabular", "wos_raw_data")
-tabular_raw_data_path <- "" # (use hardcoding for now)
+tabular_raw_data_path <- "/Users/sheila/Documents/phd/pao_lit_review/pao-review-analysis/raw_data/" # (use hardcoding for now)
 
 # rwos docs
 # https://github.com/juba/rwos
@@ -25,33 +25,51 @@ sid <- wos_authenticate()
 
 
 # ---- 3. "microbiology" search ----
-
-# "microbiology" search
+# search for all articles
 microbio_result <- wos_search(sid, "TS='microbiology' AND DT = Article", editions = c("SCI"))
 # 25270 results found
 
-
 # retrieve pub info
-microbio_pubs_raw <- wos_retrieve(microbio_result, count = 200)
-# microbio_pubs_raw <- wos_retrieve_all(microbio_result) # will pull all records
+# microbio_pubs_raw <- wos_retrieve(microbio_result, count = 200)
+microbio_pubs_raw <- wos_retrieve_all(microbio_result) # will pull all records
 
 # export raw data for future reading in
-# write_csv(polyp_pubs_raw, )
+write_csv(x = microbio_pubs_raw,  path = paste0(tabular_raw_data_path, "microbio_pubs_raw.csv"))
 
 
 # ---- 4. "polyphosphate" search ----
-# "polyphosphate" search
 # search for all articles
-# polyp_result <- wos_search(sid, "TS='polyphosphate'", editions = c("SCI")) # articles and other docs
 polyp_result <- wos_search(sid, "TS='polyphosphate' AND DT = Article", editions = c("SCI")) # only articles
 # 9172 results found
 
 # retrieve pub info
-polyp_pubs_raw <- wos_retrieve(polyp_result, count = 200)
-# polyp_pubs2 <- wos_retrieve_all(polyp_result) # will pull all records
+# polyp_pubs_raw <- wos_retrieve(polyp_result, count = 200)
+polyp_pubs_raw <- wos_retrieve_all(polyp_result) # will pull all records
 
 # export raw data for future reading in
-# write_csv()
+write_csv(x = polyp_pubs_raw,  path = paste0(tabular_raw_data_path, "polyp_pubs_raw.csv"))
+
+
+# ---- 5. "polyphosphate accumulating organisms" search ----
+# search for all articles
+pao_result <- wos_search(sid, "TS='polyphosphate accumulating organisms' AND DT = Article", editions = c("SCI")) # only articles
+# 788 results found
+
+# retrieve pub info
+# pao_pubs_raw <- wos_retrieve(pao_result, count = 200)
+pao_pubs_raw <- wos_retrieve_all(pao_result) # will pull all records
+
+# export raw data for future reading in
+write_csv(x = pao_pubs_raw,  path = paste0(tabular_raw_data_path, "pao_pubs_raw.csv"))
+
+
+# ---- 6. ----
+# TODO searchs for soil/sediment, agriculture, marine/ocean, lake/stream
+
+
+
+#
+
 
 # wrangle
 polyp_pubs <- polyp_pubs_raw %>%
