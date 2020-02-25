@@ -9,14 +9,20 @@ library(gridExtra)
 
 # define paths 
 # tabular_raw_data_path <- here("data", "tabular", "wos_raw_data")
-# tabular_raw_data_path <- "/Users/sheila/Documents/phd/pao_lit_review/pao-review-analysis/raw_data/" # (use hardcoding for now)
+tabular_raw_data_path <- "/Users/sheila/Documents/phd/pao_lit_review/pao-review-analysis/raw_data/" # (use hardcoding for now)
 # tabular_data_path <- "/Users/sheila/Documents/phd/pao_lit_review/pao-review-analysis/data/"
-tabular_raw_data_path <- "/Users/sheila/Dropbox/aaaaa_transfers/full_submission_mar2020/raw_data/"
+# tabular_raw_data_path <- "/Users/sheila/Dropbox/aaaaa_transfers/full_submission_mar2020/raw_data/"
 
 
 # ---- 2. load data ----
 # overall paper counts data
 paper_counts_data_raw <- read_csv(paste0(tabular_raw_data_path, "wos_paper_counts_raw.csv"))
+
+# microbio wos query data
+microbio_pubs_data_raw <- read_csv(paste0(tabular_raw_data_path, "microbio_all_searches_pubs_raw.csv"))
+
+# polyp wos query data
+polyp_pubs_data_raw <- read_csv(paste0(tabular_raw_data_path, "polyp_all_searches_pubs_raw.csv"))
 
 # pao wos query data
 pao_pubs_data_raw <- read_csv(paste0(tabular_raw_data_path, "pao_all_searches_pubs_raw.csv"))
@@ -28,57 +34,49 @@ paper_counts_data <- paper_counts_data_raw %>%
   mutate(category = fct_relevel(category, "all", "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
          environment = fct_relevel(environment, "all", "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
 
-# wrangle pao data
-pao_pubs_data <- pao_pubs_data_raw %>%
+# wrangle microbio data
+microbio_pubs_data <- microbio_pubs_data_raw %>%
   mutate(year_fix = as.numeric(year),
-         journal_fix = str_replace_all(str_to_title(journal), c(" ET" = " et", " Of" = " of", " The" = " the", "And" = "and", "&" = "and", "In" = "in")),
+         journal_fix = str_replace_all(str_to_title(journal), c(" Of" = " of", " The" = " the", "And" = "and", "&" = "and", "In" = "in", " Et" = " et")),
          keywords_fix = str_to_lower(str_replace_all(keywords, " \\|\\ ", ",")),
          authors_fix = str_to_lower(str_replace_all(str_replace_all(str_replace_all(str_replace_all(authors, ", ", "_"), " \\|\\ ", ","), " ", "_"), "\\.", "")),
          journal_short = if_else(str_count(journal_fix, " ") >= 3, paste0(word(journal_fix, start = 1, end = 3), "..."), journal_fix)) %>%
-  select(uid, journal_fix, journal_short, year_fix, keywords_fix, authors_fix)
-  # mutate(keywords_fix = str_replace_all(str_replace_all(str_to_lower(keywords), " ", "_"), "_\\|_", ",")) %>%
-  # separate(keywords_fix, into = paste("keyword_", 1:10, sep = ""), sep = ",") %>%
-  # select(-keywords) %>%
-  # group_by(uid) %>%
-  # gather(key = keyword_num, value = keyword, 2:11, na.rm = TRUE)
-
-
-# ---- 4. calculate paper count fraction ----
-# wrangle data to divide by polyP and PAOs by microbiology keywords
-paper_counts_perc_data <- paper_counts_data_raw %>%
-  pivot_wider(names_from = keyword, values_from = count) %>%
-  mutate(polyp_perc = polyp/microbio * 100,
-         pao_perc = pao/microbio * 100) %>%
-  select(environment, category, polyp_perc, pao_perc) %>%
-  pivot_longer(cols = c(polyp_perc, pao_perc), names_to = "keyword", values_to = "count_perc") %>%
+  select(uid, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category) %>%
   mutate(category = fct_relevel(category, "all", "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
-         environment = fct_relevel(environment, "all", "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"),
-         keyword_recode = recode_factor(keyword, "polyp_perc" = "polyP", "pao_perc" = "PAO"))
+         environment = fct_relevel(environment, "all", "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
+
+# wrangle polyp data
+polyp_pubs_data <- polyp_pubs_data_raw %>%
+  mutate(year_fix = as.numeric(year),
+         journal_fix = str_replace_all(str_to_title(journal), c(" Of" = " of", " The" = " the", "And" = "and", "&" = "and", "In" = "in", " Et" = " et")),
+         keywords_fix = str_to_lower(str_replace_all(keywords, " \\|\\ ", ",")),
+         authors_fix = str_to_lower(str_replace_all(str_replace_all(str_replace_all(str_replace_all(authors, ", ", "_"), " \\|\\ ", ","), " ", "_"), "\\.", "")),
+         journal_short = if_else(str_count(journal_fix, " ") >= 3, paste0(word(journal_fix, start = 1, end = 3), "..."), journal_fix)) %>%
+  select(uid, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category) %>%
+  mutate(category = fct_relevel(category, "all", "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
+         environment = fct_relevel(environment, "all", "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
+
+# wrangle pao data
+pao_pubs_data <- pao_pubs_data_raw %>%
+  mutate(year_fix = as.numeric(year),
+         journal_fix = str_replace_all(str_to_title(journal), c(" Of" = " of", " The" = " the", "And" = "and", "&" = "and", "In" = "in", " Et" = " et")),
+         keywords_fix = str_to_lower(str_replace_all(keywords, " \\|\\ ", ",")),
+         authors_fix = str_to_lower(str_replace_all(str_replace_all(str_replace_all(str_replace_all(authors, ", ", "_"), " \\|\\ ", ","), " ", "_"), "\\.", "")),
+         journal_short = if_else(str_count(journal_fix, " ") >= 3, paste0(word(journal_fix, start = 1, end = 3), "..."), journal_fix)) %>%
+  select(uid, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category) %>%
+  mutate(category = fct_relevel(category, "all", "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
+         environment = fct_relevel(environment, "all", "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
+# mutate(keywords_fix = str_replace_all(str_replace_all(str_to_lower(keywords), " ", "_"), "_\\|_", ",")) %>%
+# separate(keywords_fix, into = paste("keyword_", 1:10, sep = ""), sep = ",") %>%
+# select(-keywords) %>%
+# group_by(uid) %>%
+# gather(key = keyword_num, value = keyword, 2:11, na.rm = TRUE)
 
 
-# ---- 4.1 plot paper count fraction ----
-my_category_colors <- c("white", "darkgoldenrod2", "darkolivegreen3", "lightskyblue", "darkcyan", "darkorange")
-ggplot(data = paper_counts_perc_data) +
-  geom_col(aes(x = environment, y = count_perc, fill = category), color = "black") +
-  facet_wrap(~keyword_recode) +
-  xlab("Environment") +
-  ylab("Number of Results Relative to 'microbiology' Search") +
-  scale_fill_manual(values = my_category_colors) +
-  theme_bw() +
-  theme(
-    plot.background = element_blank(),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    panel.border = element_blank(),
-    axis.line = element_line(color = 'black'),
-    axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) #+
-  #facet_zoom(ylim = c(0, 100))
-
-
-# ---- 5. plot paper counts ----
+# ---- 4. plot overall pub counts ----
 # define colors
-# my_category_colors_all <- c("white", "darkgoldenrod2", "darkolivegreen3", "lightskyblue", "darkcyan", "sienna")
-my_category_colors <- c("darkgoldenrod2", "darkolivegreen3", "lightskyblue", "darkcyan", "sienna")
+# my_category_colors_all <- c("white", "lightgoldenrod", "darkolivegreen3", "lightskyblue", "darkcyan", "sienna")
+my_category_colors <- c("lightgoldenrod", "darkolivegreen3", "lightskyblue", "darkcyan", "sienna")
 
 # microbiology papers
 p1 <- ggplot(data = paper_counts_data %>% filter(keyword == "microbio") %>% filter(category != "all")) +
@@ -87,7 +85,7 @@ p1 <- ggplot(data = paper_counts_data %>% filter(keyword == "microbio") %>% filt
   ylab("Number of WOS Articles Returned") +
   ylim(0, 1250) +
   scale_fill_manual(values = my_category_colors) +
-  annotate("text", x = 1, y = 1250, label = "(a) 'microbiology'\n     (total collection = 25,283)", size = 4, hjust = 0) +
+  annotate("text", x = 1, y = 1250, label = "(a) 'microbiology'\n     (total collection = 25,330)", size = 4, hjust = 0) +
   theme_classic() +
   theme(axis.title.x = element_text(size = 12),
         axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 12),
@@ -103,7 +101,7 @@ p2 <- ggplot(data = paper_counts_data %>% filter(keyword == "polyp") %>% filter(
   ylab("") +
   ylim(0, 650) +
   scale_fill_manual(values = my_category_colors) +
-  annotate("text", x = 1, y = 650, label = "(b) 'polyphosphate'\n     (total collection = 9,180)", size = 4, hjust = 0) +
+  annotate("text", x = 1, y = 650, label = "(b) 'polyphosphate'\n     (total collection = 9,209)", size = 4, hjust = 0) +
   theme_classic() +
   theme(axis.title.x = element_text(size = 12),
         axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 12),
@@ -119,7 +117,7 @@ p3 <- ggplot(data = paper_counts_data %>% filter(keyword == "pao") %>% filter(ca
   ylab("") +
   ylim(0, 450) +
   scale_fill_manual(values = my_category_colors) +
-  annotate("text", x = 1, y = 450, label = "(c) 'polyphosphate accumulating organisms'\n     (total collection = 789)", size = 4, hjust = 0) +
+  annotate("text", x = 1, y = 450, label = "(c) 'polyphosphate accumulating organisms'\n     (total collection = 794)", size = 4, hjust = 0) +
   theme_classic() +
   theme(axis.title.x = element_text(size = 12),
         axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 12),
@@ -133,16 +131,116 @@ p3 <- ggplot(data = paper_counts_data %>% filter(keyword == "pao") %>% filter(ca
 grid.arrange(p1, p2, p3, nrow = 1)
 
 
-# ---- 6. plot paper counts over time -----
+# ---- 5.1 calculate paper counts over time -----
+# microbio pubs vs time
+microbio_pubs_time_data <- microbio_pubs_data %>%
+  group_by(category, year_fix) %>%
+  count() %>%
+  filter(year_fix >= 1990)
+
+# polyp pubs vs time
+polyp_pubs_time_data <- polyp_pubs_data %>%
+  group_by(category, year_fix) %>%
+  count() %>%
+  filter(year_fix >= 1990)
+
+# pao pubs vs time
+pao_pubs_time_data <- pao_pubs_data %>%
+  group_by(category, year_fix) %>%
+  count()
+
+
+# ---- 5.2 plot paper counts over time -----
+# define colors
+my_category_colors_all <- c("white", "lightgoldenrod", "darkolivegreen3", "lightskyblue", "darkcyan", "sienna")
+# my_category_colors <- c("lightgoldenrod", "darkolivegreen3", "lightskyblue", "darkcyan", "sienna")
+
+# microbio pubs vs time
+ggplot(data = microbio_pubs_time_data) +
+  geom_col(aes(x = year_fix, y = n, fill = category), color = "black") +
+  facet_wrap(~ category) +
+  xlab("Year") +
+  ylab("Number of WOS 'microbiology' Articles Returned (after 1990)") +
+  scale_fill_manual(values = my_category_colors_all) +
+  theme_classic() +
+  theme(axis.title.x = element_text(size = 12),
+        axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        axis.text = element_text(size = 12),
+        legend.position = "none")
+
+# polyp pubs vs time
+ggplot(data = polyp_pubs_time_data) +
+  geom_col(aes(x = year_fix, y = n, fill = category), color = "black") +
+  facet_wrap(~ category) +
+  xlab("Year") +
+  ylab("Number of WOS 'polyphosphate' Articles Returned (after 1990)") +
+  scale_fill_manual(values = my_category_colors_all) +
+  theme_classic() +
+  theme(axis.title.x = element_text(size = 12),
+        axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        axis.text = element_text(size = 12),
+        legend.position = "none")
+
+# pao pubs vs time
+ggplot(data = pao_pubs_time_data) +
+  geom_col(aes(x = year_fix, y = n, fill = category), color = "black") +
+  facet_wrap(~ category) +
+  xlab("Year") +
+  ylab("Number of WOS 'polyphosphate accumulating organisms' Articles Returned") +
+  scale_fill_manual(values = my_category_colors_all) +
+  theme_classic() +
+  theme(axis.title.x = element_text(size = 12),
+        axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        axis.text = element_text(size = 12),
+        legend.position = "none")
+
+# ---- 6.1 calculate journal-specific pub counts ----
+
+
+
+# ---- 6.2 plot journal-specific pub counts ----
 
 
 
 
-# ---- 6. ----
+# ---- X.1 calculate paper count fraction ----
+# wrangle data to divide by polyP and PAOs by microbiology keywords
+paper_counts_perc_data <- paper_counts_data_raw %>%
+  pivot_wider(names_from = keyword, values_from = count) %>%
+  mutate(polyp_perc = polyp/microbio * 100,
+         pao_perc = pao/microbio * 100) %>%
+  select(environment, category, polyp_perc, pao_perc) %>%
+  pivot_longer(cols = c(polyp_perc, pao_perc), names_to = "keyword", values_to = "count_perc") %>%
+  mutate(category = fct_relevel(category, "all", "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
+         environment = fct_relevel(environment, "all", "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"),
+         keyword_recode = recode_factor(keyword, "polyp_perc" = "polyP", "pao_perc" = "PAO"))
 
 
+# ---- X.2 plot paper count fraction ----
+my_category_colors <- c("white", "darkgoldenrod2", "darkolivegreen3", "lightskyblue", "darkcyan", "darkorange")
+ggplot(data = paper_counts_perc_data) +
+  geom_col(aes(x = environment, y = count_perc, fill = category), color = "black") +
+  facet_wrap(~keyword_recode) +
+  xlab("Environment") +
+  ylab("Number of Results Relative to 'microbiology' Search") +
+  scale_fill_manual(values = my_category_colors) +
+  theme_bw() +
+  theme(
+    plot.background = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_blank(),
+    axis.line = element_line(color = 'black'),
+    axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) #+
+#facet_zoom(ylim = c(0, 100))
 
-#
+
 
 
 # wrangle
