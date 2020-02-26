@@ -9,7 +9,7 @@ library(gridExtra)
 
 # define paths 
 # tabular_raw_data_path <- here("data", "tabular", "wos_raw_data")
-tabular_raw_data_path <- "/Users/sheila/Documents/phd/pao_lit_review/pao-review-analysis/raw_data/" # (use hardcoding for now)
+# tabular_raw_data_path <- "/Users/sheila/Documents/phd/pao_lit_review/pao-review-analysis/raw_data/" # (use hardcoding for now)
 # tabular_data_path <- "/Users/sheila/Documents/phd/pao_lit_review/pao-review-analysis/data/"
 # tabular_raw_data_path <- "/Users/sheila/Dropbox/aaaaa_transfers/full_submission_mar2020/raw_data/"
 
@@ -136,24 +136,31 @@ grid.arrange(p1, p2, p3, nrow = 1)
 microbio_pubs_time_data <- microbio_pubs_data %>%
   group_by(category, year_fix) %>%
   count() %>%
-  filter(year_fix >= 1990)
+  filter(year_fix >= 1990 & year_fix < 2020) %>%
+  mutate(search = "microbiology")
 
 # polyp pubs vs time
 polyp_pubs_time_data <- polyp_pubs_data %>%
   group_by(category, year_fix) %>%
   count() %>%
-  filter(year_fix >= 1990)
+  filter(year_fix >= 1990 & year_fix < 2020) %>%
+  mutate(search = "polyphosphate")
 
 # pao pubs vs time
 pao_pubs_time_data <- pao_pubs_data %>%
   group_by(category, year_fix) %>%
-  count()
+  count() %>%
+  filter(year_fix >= 1990 & year_fix < 2020) %>%
+  mutate(search = "PAOs")
+  
+# bind datasets
+all_pubs_time_data <- bind_rows(microbio_pubs_time_data, polyp_pubs_time_data, pao_pubs_time_data)
 
 
 # ---- 5.2 plot paper counts over time -----
 # define colors
 my_category_colors_all <- c("white", "lightgoldenrod", "darkolivegreen3", "lightskyblue", "darkcyan", "sienna")
-# my_category_colors <- c("lightgoldenrod", "darkolivegreen3", "lightskyblue", "darkcyan", "sienna")
+my_category_colors <- c("lightgoldenrod", "darkolivegreen3", "lightskyblue", "darkcyan", "sienna")
 
 # microbio pubs vs time
 ggplot(data = microbio_pubs_time_data) +
@@ -200,13 +207,53 @@ ggplot(data = pao_pubs_time_data) +
         axis.text = element_text(size = 12),
         legend.position = "none")
 
-# ---- 6.1 calculate journal-specific pub counts ----
+# plot all together (without 'all' category)
+ggplot(data = all_pubs_time_data %>% filter(category != "all")) +
+  geom_line(aes(x = year_fix, y = n, color = category, linetype = search)) +
+  geom_point(aes(x = year_fix, y = n, color = category, shape = search), size = 3, alpha = 0.80) +
+  facet_wrap(~ category) +
+  xlab("Year") +
+  ylab("Number of WOS Articles Returned (between 1990-2019)") +
+  scale_color_manual(values = my_category_colors) +
+  theme_classic() +
+  theme(axis.title.x = element_text(size = 12),
+        axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        axis.text = element_text(size = 12))
 
+# plot all together (just 'all' category)
+ggplot(data = all_pubs_time_data %>% filter(category == "all")) +
+  geom_line(aes(x = year_fix, y = n, linetype = search)) +
+  geom_point(aes(x = year_fix, y = n, shape = search), size = 3, alpha = 0.80) +
+  xlab("Year") +
+  ylab("Number of WOS Articles Returned") +
+  theme_classic() +
+  theme(axis.title.x = element_text(size = 12),
+        axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        axis.text = element_text(size = 12))
+
+
+# ---- 6.1 calculate journal-specific pub counts ----
+# TODO make lookup key for shortened names
+# TODO calcs for other searches (polyp and pao)
+
+# microbio pubs per jounal (top 5)
+microbio_pubs_journal_data <- microbio_pubs_data %>%
+  group_by(category, journal_fix) %>%
+  count() %>%
+  ungroup() %>%
+  group_by(category) %>%
+  mutate(rank = dense_rank(desc(n))) %>%
+  filter(rank <= 5) %>%
+  arrange(category, rank)
 
 
 # ---- 6.2 plot journal-specific pub counts ----
 
-
+# TODO how to plot these?
 
 
 # ---- X.1 calculate paper count fraction ----
