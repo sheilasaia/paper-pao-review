@@ -11,7 +11,7 @@ library(gridExtra)
 # tabular_raw_data_path <- here("data", "tabular", "wos_raw_data")
 # tabular_raw_data_path <- "/Users/sheila/Documents/phd/pao_lit_review/pao-review-analysis/raw_data/" # (use hardcoding for now)
 # tabular_data_path <- "/Users/sheila/Documents/phd/pao_lit_review/pao-review-analysis/data/"
-# tabular_raw_data_path <- "/Users/sheila/Dropbox/aaaaa_transfers/full_submission_mar2020/raw_data/"
+tabular_raw_data_path <- "/Users/sheila/Dropbox/aaaaa_transfers/full_submission_mar2020/raw_data/"
 
 
 # ---- 2. load data ----
@@ -37,7 +37,7 @@ paper_counts_data <- paper_counts_data_raw %>%
 # wrangle microbio data
 microbio_pubs_data <- microbio_pubs_data_raw %>%
   mutate(year_fix = as.numeric(year),
-         journal_fix = str_replace_all(str_to_title(journal), c(" Of" = " of", " The" = " the", "And" = "and", "&" = "and", "In" = "in", " Et" = " et")),
+         journal_fix = str_replace_all(str_to_title(journal), c(" Of " = " of ", " The " = " the ", "And" = "and", "&" = "and", " In " = " in ", " Et " = " et ")),
          keywords_fix = str_to_lower(str_replace_all(keywords, " \\|\\ ", ",")),
          authors_fix = str_to_lower(str_replace_all(str_replace_all(str_replace_all(str_replace_all(authors, ", ", "_"), " \\|\\ ", ","), " ", "_"), "\\.", "")),
          journal_short = if_else(str_count(journal_fix, " ") >= 3, paste0(word(journal_fix, start = 1, end = 3), "..."), journal_fix)) %>%
@@ -48,8 +48,7 @@ microbio_pubs_data <- microbio_pubs_data_raw %>%
 # wrangle polyp data
 polyp_pubs_data <- polyp_pubs_data_raw %>%
   mutate(year_fix = as.numeric(year),
-         journal_fix = str_replace_all(str_to_title(journal), c(" Of" = " of", " The" = " the", "And" = "and", "&" = "and", "In" = "in", " Et" = " et")),
-         keywords_fix = str_to_lower(str_replace_all(keywords, " \\|\\ ", ",")),
+         journal_fix = str_replace_all(str_to_title(journal), c(" Of " = " of ", " The " = " the ", "And" = "and", "&" = "and", " In " = " in ", " Et " = " et ")),         keywords_fix = str_to_lower(str_replace_all(keywords, " \\|\\ ", ",")),
          authors_fix = str_to_lower(str_replace_all(str_replace_all(str_replace_all(str_replace_all(authors, ", ", "_"), " \\|\\ ", ","), " ", "_"), "\\.", "")),
          journal_short = if_else(str_count(journal_fix, " ") >= 3, paste0(word(journal_fix, start = 1, end = 3), "..."), journal_fix)) %>%
   select(uid, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category) %>%
@@ -59,8 +58,7 @@ polyp_pubs_data <- polyp_pubs_data_raw %>%
 # wrangle pao data
 pao_pubs_data <- pao_pubs_data_raw %>%
   mutate(year_fix = as.numeric(year),
-         journal_fix = str_replace_all(str_to_title(journal), c(" Of" = " of", " The" = " the", "And" = "and", "&" = "and", "In" = "in", " Et" = " et")),
-         keywords_fix = str_to_lower(str_replace_all(keywords, " \\|\\ ", ",")),
+         journal_fix = str_replace_all(str_to_title(journal), c(" Of " = " of ", " The " = " the ", "And" = "and", "&" = "and", " In " = " in ", " Et " = " et ")),         keywords_fix = str_to_lower(str_replace_all(keywords, " \\|\\ ", ",")),
          authors_fix = str_to_lower(str_replace_all(str_replace_all(str_replace_all(str_replace_all(authors, ", ", "_"), " \\|\\ ", ","), " ", "_"), "\\.", "")),
          journal_short = if_else(str_count(journal_fix, " ") >= 3, paste0(word(journal_fix, start = 1, end = 3), "..."), journal_fix)) %>%
   select(uid, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category) %>%
@@ -71,6 +69,21 @@ pao_pubs_data <- pao_pubs_data_raw %>%
 # select(-keywords) %>%
 # group_by(uid) %>%
 # gather(key = keyword_num, value = keyword, 2:11, na.rm = TRUE)
+
+# microbio journal look-up
+microbio_journal_lookup <- microbio_pubs_data %>%
+  select(journal_fix, journal_short) %>%
+  distinct(journal_fix, journal_short)
+
+# polyp journal look-up
+polyp_journal_lookup <- polyp_pubs_data %>%
+  select(journal_fix, journal_short) %>%
+  distinct(journal_fix, journal_short)
+
+# pao journal look-up
+pao_journal_lookup <- pao_pubs_data %>%
+  select(journal_fix, journal_short) %>%
+  distinct(journal_fix, journal_short)
 
 
 # ---- 4. plot overall pub counts ----
@@ -237,23 +250,60 @@ ggplot(data = all_pubs_time_data %>% filter(category == "all")) +
 
 
 # ---- 6.1 calculate journal-specific pub counts ----
-# TODO make lookup key for shortened names
-# TODO calcs for other searches (polyp and pao)
-
-# microbio pubs per jounal (top 5)
+# microbio pubs per jounal (top journal)
 microbio_pubs_journal_data <- microbio_pubs_data %>%
   group_by(category, journal_fix) %>%
   count() %>%
   ungroup() %>%
   group_by(category) %>%
-  mutate(rank = dense_rank(desc(n))) %>%
-  filter(rank <= 5) %>%
-  arrange(category, rank)
+  mutate(pub_rank = dense_rank(desc(n))) %>%
+  filter(pub_rank <= 1) %>%
+  mutate(category = fct_relevel(category, "all", "wwtp", "terrestrial", "freshwater", "marine", "agriculture"))
+
+# polyp pubs per jounal (top journal)
+polyp_pubs_journal_data <- polyp_pubs_data %>%
+  group_by(category, journal_fix) %>%
+  count() %>%
+  ungroup() %>%
+  group_by(category) %>%
+  mutate(pub_rank = dense_rank(desc(n))) %>%
+  filter(pub_rank <= 1) %>%
+  mutate(category = fct_relevel(category, "all", "wwtp", "terrestrial", "freshwater", "marine", "agriculture"))
+
+
+# pao pubs per jounal (top journal)
+pao_pubs_journal_data <- pao_pubs_data %>%
+  group_by(category, journal_fix) %>%
+  count() %>%
+  ungroup() %>%
+  group_by(category) %>%
+  mutate(pub_rank = dense_rank(desc(n))) %>%
+  filter(pub_rank <= 1) %>%
+  mutate(category = fct_relevel(category, "all", "wwtp", "terrestrial", "freshwater", "marine", "agriculture"))
 
 
 # ---- 6.2 plot journal-specific pub counts ----
+# define colors
+my_category_colors_all <- c("white", "lightgoldenrod", "darkolivegreen3", "lightskyblue", "darkcyan", "sienna")
+my_category_colors <- c("lightgoldenrod", "darkolivegreen3", "lightskyblue", "darkcyan", "sienna")
 
-# TODO how to plot these?
+# microbiology results
+ggplot(data = microbio_pubs_journal_data) +
+  geom_col(aes(x = journal_fix, y = n, fill = category), color = "black") +
+  xlab("Journal") +
+  ylab("Number of WOS Articles Returned") +
+  scale_fill_manual(values = my_category_colors_all) +
+  theme_classic() +
+  theme(axis.title.x = element_text(size = 12),
+        axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        axis.text = element_text(size = 12))
+
+
+# TODO how to plot these or just show as a table?
+# TODO show data for top 3 or more?
+
 
 
 # ---- X.1 calculate paper count fraction ----
