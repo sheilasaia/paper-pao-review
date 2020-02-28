@@ -257,7 +257,8 @@ microbio_pubs_journal_data <- microbio_pubs_data %>%
   ungroup() %>%
   group_by(category) %>%
   mutate(pub_rank = dense_rank(desc(n))) %>%
-  filter(pub_rank <= 1) %>%
+  filter(pub_rank <= 5) %>%
+  ungroup() %>%
   mutate(category = fct_relevel(category, "all", "wwtp", "terrestrial", "freshwater", "marine", "agriculture"))
 
 # polyp pubs per jounal (top journal)
@@ -267,7 +268,8 @@ polyp_pubs_journal_data <- polyp_pubs_data %>%
   ungroup() %>%
   group_by(category) %>%
   mutate(pub_rank = dense_rank(desc(n))) %>%
-  filter(pub_rank <= 1) %>%
+  filter(pub_rank <= 5) %>%
+  ungroup() %>%
   mutate(category = fct_relevel(category, "all", "wwtp", "terrestrial", "freshwater", "marine", "agriculture"))
 
 
@@ -278,7 +280,8 @@ pao_pubs_journal_data <- pao_pubs_data %>%
   ungroup() %>%
   group_by(category) %>%
   mutate(pub_rank = dense_rank(desc(n))) %>%
-  filter(pub_rank <= 1) %>%
+  filter(pub_rank <= 5) %>%
+  ungroup() %>%
   mutate(category = fct_relevel(category, "all", "wwtp", "terrestrial", "freshwater", "marine", "agriculture"))
 
 
