@@ -18,7 +18,10 @@ tabular_raw_data_path <- "/Users/sheila/Dropbox/aaaaa_transfers/full_submission_
 # overall paper counts data
 paper_counts_data_raw <- read_csv(paste0(tabular_raw_data_path, "wos_paper_counts_raw.csv"))
 
-# microbio wos query data
+# phosphorus wos query data
+phos_pubs_data_raw <- read_csv(paste0(tabular_raw_data_path, "phos_all_searches_pubs_raw.csv"))
+
+# microbiology wos query data
 microbio_pubs_data_raw <- read_csv(paste0(tabular_raw_data_path, "microbio_all_searches_pubs_raw.csv"))
 
 # polyp wos query data
@@ -33,6 +36,19 @@ pao_pubs_data_raw <- read_csv(paste0(tabular_raw_data_path, "pao_all_searches_pu
 paper_counts_data <- paper_counts_data_raw %>%
   mutate(category = fct_relevel(category, "all", "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
          environment = fct_relevel(environment, "all", "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
+
+# wrangle phosphorus data
+phos_pubs_data <- phos_pubs_data_raw %>%
+  mutate(year_fix = as.numeric(year),
+         journal_fix = str_replace_all(str_to_title(journal), c(" Of " = " of ", " The " = " the ", "And" = "and", "&" = "and", " In " = " in ", " Et " = " et ")),
+         keywords_fix = str_to_lower(str_replace_all(keywords, " \\|\\ ", ",")),
+         authors_fix = str_to_lower(str_replace_all(str_replace_all(str_replace_all(str_replace_all(authors, ", ", "_"), " \\|\\ ", ","), " ", "_"), "\\.", "")),
+         journal_short = if_else(str_count(journal_fix, " ") >= 3, paste0(word(journal_fix, start = 1, end = 3), "..."), journal_fix)) %>%
+  select(uid, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category) %>%
+#   mutate(category = fct_relevel(category, "all", "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
+#          environment = fct_relevel(environment, "all", "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
+  mutate(category = fct_relevel(category, "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
+         environment = fct_relevel(environment, "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture")) # there's no "all" category yet...
 
 # wrangle microbio data
 microbio_pubs_data <- microbio_pubs_data_raw %>%
@@ -70,6 +86,11 @@ pao_pubs_data <- pao_pubs_data_raw %>%
 # group_by(uid) %>%
 # gather(key = keyword_num, value = keyword, 2:11, na.rm = TRUE)
 
+# phosphorus journal look-up
+phos_journal_lookup <- phos_pubs_data %>%
+  select(journal_fix, journal_short) %>%
+  distinct(journal_fix, journal_short)
+
 # microbio journal look-up
 microbio_journal_lookup <- microbio_pubs_data %>%
   select(journal_fix, journal_short) %>%
@@ -86,19 +107,53 @@ pao_journal_lookup <- pao_pubs_data %>%
   distinct(journal_fix, journal_short)
 
 
-# ---- 4. plot overall pub counts ----
+# ---- 4.1 calculate overall pub counts ----
+
+# get sum of counts for each category
+paper_counts_data_summary <- paper_counts_data %>%
+  filter(category != "all") %>% # don't want this in summary
+  group_by(keyword) %>%
+  summarize(count_sum = sum(count))
+# phos = 110265
+# microbio = 3990
+# polyp = 1648
+# pao = 464
+# but there could totally be overlap here!
+
+# only calculate fractions for specific environments
+paper_counts_data_frac <- paper_counts_data %>%
+  filter(category != "all")
+
+
+# ---- 4.2 plot overall pub counts ----
 # define colors
 # my_category_colors_all <- c("white", "lightgoldenrod", "darkolivegreen3", "lightskyblue", "darkcyan", "sienna")
 my_category_colors <- c("lightgoldenrod", "darkolivegreen3", "lightskyblue", "darkcyan", "sienna")
 
+# phosphorus papers
+p1 <- ggplot(data = paper_counts_data %>% filter(keyword == "phos") %>% filter(category != "all")) +
+  geom_col(aes(x = environment, y = count, fill = category), color = "black") +
+  xlab("") +
+  ylab("Number of WOS Articles Returned") +
+  ylim(0, 45000) +
+  scale_fill_manual(values = my_category_colors) +
+  annotate("text", x = 1, y = 45000, label = "(a) 'phosphorus'\n     (total collection = 183,683)", size = 4, hjust = 0) +
+  theme_classic() +
+  theme(axis.title.x = element_text(size = 12),
+        axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        axis.text = element_text(size = 12), 
+        legend.position = "none")
+
 # microbiology papers
-p1 <- ggplot(data = paper_counts_data %>% filter(keyword == "microbio") %>% filter(category != "all")) +
+p2 <- ggplot(data = paper_counts_data %>% filter(keyword == "microbio") %>% filter(category != "all")) +
   geom_col(aes(x = environment, y = count, fill = category), color = "black") +
   xlab("") +
   ylab("Number of WOS Articles Returned") +
   ylim(0, 1250) +
   scale_fill_manual(values = my_category_colors) +
-  annotate("text", x = 1, y = 1250, label = "(a) 'microbiology'\n     (total collection = 25,330)", size = 4, hjust = 0) +
+  annotate("text", x = 1, y = 1250, label = "(b) 'microbiology'\n     (total collection = 25,359)", size = 4, hjust = 0) +
   theme_classic() +
   theme(axis.title.x = element_text(size = 12),
         axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 12),
@@ -108,13 +163,13 @@ p1 <- ggplot(data = paper_counts_data %>% filter(keyword == "microbio") %>% filt
         legend.position = "none")
 
 # polyp papers
-p2 <- ggplot(data = paper_counts_data %>% filter(keyword == "polyp") %>% filter(category != "all")) +
+p3 <- ggplot(data = paper_counts_data %>% filter(keyword == "polyp") %>% filter(category != "all")) +
   geom_col(aes(x = environment, y = count, fill = category), color = "black") +
   xlab("Environment") +
   ylab("") +
   ylim(0, 650) +
   scale_fill_manual(values = my_category_colors) +
-  annotate("text", x = 1, y = 650, label = "(b) 'polyphosphate'\n     (total collection = 9,209)", size = 4, hjust = 0) +
+  annotate("text", x = 1, y = 650, label = "(c) 'polyphosphate'\n     (total collection = 9,217)", size = 4, hjust = 0) +
   theme_classic() +
   theme(axis.title.x = element_text(size = 12),
         axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 12),
@@ -124,13 +179,13 @@ p2 <- ggplot(data = paper_counts_data %>% filter(keyword == "polyp") %>% filter(
         legend.position = "none")
 
 # pao papers
-p3 <- ggplot(data = paper_counts_data %>% filter(keyword == "pao") %>% filter(category != "all")) +
+p4 <- ggplot(data = paper_counts_data %>% filter(keyword == "pao") %>% filter(category != "all")) +
   geom_col(aes(x = environment, y = count, fill = category), color = "black") +
   xlab("") +
   ylab("") +
   ylim(0, 450) +
   scale_fill_manual(values = my_category_colors) +
-  annotate("text", x = 1, y = 450, label = "(c) 'polyphosphate accumulating organisms'\n     (total collection = 794)", size = 4, hjust = 0) +
+  annotate("text", x = 1, y = 450, label = "(d) 'polyphosphate accumulating organisms'\n     (total collection = 796)", size = 4, hjust = 0) +
   theme_classic() +
   theme(axis.title.x = element_text(size = 12),
         axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 12),
@@ -141,10 +196,17 @@ p3 <- ggplot(data = paper_counts_data %>% filter(keyword == "pao") %>% filter(ca
 
 # plot together
 # https://cran.r-project.org/web/packages/egg/vignettes/Ecosystem.html
-grid.arrange(p1, p2, p3, nrow = 1)
+grid.arrange(p1, p2, p3, p4, nrow = 2)
 
 
 # ---- 5.1 calculate paper counts over time -----
+# phosphorus pubs vs time
+phos_pubs_time_data <- phos_pubs_data %>%
+  group_by(category, year_fix) %>%
+  count() %>%
+  filter(year_fix >= 1990 & year_fix < 2020) %>%
+  mutate(search = "microbiology")
+
 # microbio pubs vs time
 microbio_pubs_time_data <- microbio_pubs_data %>%
   group_by(category, year_fix) %>%
@@ -303,10 +365,13 @@ ggplot(data = microbio_pubs_journal_data) +
         axis.text.y = element_text(size = 12),
         axis.text = element_text(size = 12))
 
+# ---- TO DO LIST ----
 
-# TODO how to plot these or just show as a table?
-# TODO show data for top 3 or more?
-
+# TODO fix section 5.1 calc so it doesn't include "all" in count summary
+# TODO make table for top 1
+# TODO Todd suggested to show % instead of counts on section 4 figure but I'm not sure how to deal with/calculate overlapping papers...
+# TODO Ryan suggested to normalize by number of pubs in microbiology or some broader field
+# TODO Theo asked if spikes were from funding cycle (3-years)?
 
 
 # ---- X.1 calculate paper count fraction ----
@@ -373,8 +438,6 @@ ggplot(data = polyp_pubs_yearly_counts) +
         axis.text.x = element_text(size = 12),
         axis.text.y = element_text(size = 12),
         axis.text = element_text(size = 12))
-# TODO Ryan suggests to normalize by number of pubs in microbiology or some broader field
-# TODO Theo asked if spikes were from funding cycle (3-years)?
 
 # box plot of pubs per journal
 polyp_pubs_journal_counts %>%
