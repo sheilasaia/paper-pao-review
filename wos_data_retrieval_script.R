@@ -31,18 +31,18 @@ sid <- wos_authenticate()
 # as of 20200302 at 10am
 
 # search for articles
-phos_result <- wos_search(sid, "TS='phosphate' AND DT = Article", editions = c("SCI")) # 346612 results found
-phos_wwtp_result <- wos_search(sid, "TS='phosphate' AND TS='wastewater' AND DT = Article", editions = c("SCI")) # 4938
-phos_soil_result <- wos_search(sid, "TS='phosphate' AND TS='soil' AND DT = Article", editions = c("SCI")) # 18761
-phos_sed_result <- wos_search(sid, "TS='phosphate' AND TS='sediment' AND DT = Article", editions = c("SCI")) # 6037
-phos_lake_result <- wos_search(sid, "TS='phosphate' AND TS='lake' AND DT = Article", editions = c("SCI")) # 3686
-phos_stream_result <- wos_search(sid, "TS='phosphate' AND TS='stream' AND DT = Article", editions = c("SCI")) # 2312
-phos_river_result <- wos_search(sid, "TS='phosphate' AND TS='river' AND DT = Article", editions = c("SCI")) # 4025
-phos_fw_result <- wos_search(sid, "TS='phosphate' AND (TS='freshwater' OR TS='fresh water') AND DT = Article", editions = c("SCI")) # 3285
-phos_marine_result <- wos_search(sid, "TS='phosphate' AND TS='marine' AND DT = Article", editions = c("SCI")) # 4525
-phos_ocean_result <- wos_search(sid, "TS='phosphate' AND TS='ocean' AND DT = Article", editions = c("SCI")) # 2319
-phos_sw_result <- wos_search(sid, "TS='phosphate' AND (TS='salt water' OR TS='saltwater') AND DT = Article", editions = c("SCI")) # 3971
-phos_ag_result <- wos_search(sid, "TS='phosphate' AND TS='agriculture' AND DT = Article", editions = c("SCI")) # 1706
+phos_result <- wos_search(sid, "TS='phosphorus' AND DT = Article", editions = c("SCI")) # 183683 results found
+phos_wwtp_result <- wos_search(sid, "TS='phosphorus' AND TS='wastewater' AND DT = Article", editions = c("SCI")) # 8427
+phos_soil_result <- wos_search(sid, "TS='phosphorus' AND TS='soil' AND DT = Article", editions = c("SCI")) # 39481
+phos_sed_result <- wos_search(sid, "TS='phosphorus' AND TS='sediment' AND DT = Article", editions = c("SCI")) # 12570
+phos_lake_result <- wos_search(sid, "TS='phosphorus' AND TS='lake' AND DT = Article", editions = c("SCI")) # 13394
+phos_stream_result <- wos_search(sid, "TS='phosphorus' AND TS='stream' AND DT = Article", editions = c("SCI")) # 5571
+phos_river_result <- wos_search(sid, "TS='phosphorus' AND TS='river' AND DT = Article", editions = c("SCI")) # 10166
+phos_fw_result <- wos_search(sid, "TS='phosphorus' AND (TS='freshwater' OR TS='fresh water') AND DT = Article", editions = c("SCI")) # 6901
+phos_marine_result <- wos_search(sid, "TS='phosphorus' AND TS='marine' AND DT = Article", editions = c("SCI")) # 4943
+phos_ocean_result <- wos_search(sid, "TS='phosphorus' AND TS='ocean' AND DT = Article", editions = c("SCI")) # 2416
+phos_sw_result <- wos_search(sid, "TS='phosphorus' AND (TS='salt water' OR TS='saltwater') AND DT = Article", editions = c("SCI")) # 1976
+phos_ag_result <- wos_search(sid, "TS='phosphorus' AND TS='agriculture' AND DT = Article", editions = c("SCI")) # 4420
 
 # retrieve pub info
 # phos_pubs_raw <- wos_retrieve(phos_result, count = 200)
