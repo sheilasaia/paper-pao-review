@@ -9,7 +9,9 @@ library(here)
 
 # define paths 
 # tabular_raw_data_path <- here("data", "tabular", "wos_raw_data")
-tabular_raw_data_path <- "/Users/sheila/Documents/phd/pao_lit_review/pao-review-analysis/raw_data/" # (use hardcoding for now)
+# tabular_raw_data_path <- "/Users/sheila/Documents/phd/pao_lit_review/pao-review-analysis/raw_data/" # (use hardcoding for now)
+tabular_raw_data_path <- "/Users/sheila/Dropbox/aaaaa_transfers/full_submission_mar2020/raw_data/" # (use hardcoding for now)
+
 
 # rwos docs
 # https://github.com/juba/rwos
@@ -24,7 +26,65 @@ tabular_raw_data_path <- "/Users/sheila/Documents/phd/pao_lit_review/pao-review-
 sid <- wos_authenticate()
 
 
-# ---- 3. "microbiology" search ----
+# ---- 4. "phosphate" search ----
+# as of 20200225 at 10am
+
+# search for articles
+phos_result <- wos_search(sid, "TS='phosphate' AND DT = Article", editions = c("SCI")) # 25330 results found
+phos_wwtp_result <- wos_search(sid, "TS='phosphate' AND TS='wastewater' AND DT = Article", editions = c("SCI")) # 275
+phos_soil_result <- wos_search(sid, "TS='phosphate' AND TS='soil' AND DT = Article", editions = c("SCI")) # 1137
+phos_sed_result <- wos_search(sid, "TS='phosphate' AND TS='sediment' AND DT = Article", editions = c("SCI")) # 443
+phos_lake_result <- wos_search(sid, "TS='phosphate' AND TS='lake' AND DT = Article", editions = c("SCI")) # 188
+phos_stream_result <- wos_search(sid, "TS='phosphate' AND TS='stream' AND DT = Article", editions = c("SCI")) # 518
+phos_river_result <- wos_search(sid, "TS='phosphate' AND TS='river' AND DT = Article", editions = c("SCI")) # 186
+phos_fw_result <- wos_search(sid, "TS='phosphate' AND (TS='freshwater' OR TS='fresh water') AND DT = Article", editions = c("SCI")) # 264
+phos_marine_result <- wos_search(sid, "TS='phosphate' AND TS='marine' AND DT = Article", editions = c("SCI")) # 483
+phos_ocean_result <- wos_search(sid, "TS='phosphate' AND TS='ocean' AND DT = Article", editions = c("SCI")) # 167
+phos_sw_result <- wos_search(sid, "TS='phosphate' AND (TS='salt water' OR TS='saltwater') AND DT = Article", editions = c("SCI")) # 103
+phos_ag_result <- wos_search(sid, "TS='phosphate' AND TS='agriculture' AND DT = Article", editions = c("SCI")) # 221
+
+# retrieve pub info
+# phos_pubs_raw <- wos_retrieve(phos_result, count = 200)
+phos_pubs_raw <- wos_retrieve_all(phos_result) %>% mutate(environment = "all", category = "all") # will pull all records
+phos_wwtp_pubs_raw <- wos_retrieve_all(phos_wwtp_result) %>% mutate(environment = "wwtp", category = "wwtp")
+phos_soil_pubs_raw <- wos_retrieve_all(phos_soil_result) %>% mutate(environment = "soil", category = "terrestrial")
+phos_sed_pubs_raw <- wos_retrieve_all(phos_sed_result) %>% mutate(environment = "sediment", category = "terrestrial")
+phos_lake_pubs_raw <- wos_retrieve_all(phos_lake_result) %>% mutate(environment = "lake", category = "freshwater")
+phos_stream_pubs_raw <- wos_retrieve_all(phos_stream_result) %>% mutate(environment = "stream", category = "freshwater")
+phos_river_pubs_raw <- wos_retrieve_all(phos_river_result) %>% mutate(environment = "river", category = "freshwater")
+phos_fw_pubs_raw <- wos_retrieve_all(phos_fw_result) %>% mutate(environment = "freshwater", category = "freshwater")
+phos_marine_pubs_raw <- wos_retrieve_all(phos_marine_result) %>% mutate(environment = "marine", category = "marine")
+phos_ocean_pubs_raw <- wos_retrieve_all(phos_ocean_result) %>% mutate(environment = "ocean", category = "marine")
+phos_sw_pubs_raw <- wos_retrieve_all(phos_sw_result) %>% mutate(environment = "saltwater", category = "marine")
+phos_ag_pubs_raw <- wos_retrieve_all(phos_ag_result) %>% mutate(environment = "agriculture", category = "agriculture")
+
+# export raw data for future reading in
+write_csv(x = phos_pubs_raw,  path = paste0(tabular_raw_data_path, "phos_pubs_raw.csv"))
+write_csv(x = phos_wwtp_pubs_raw,  path = paste0(tabular_raw_data_path, "phos_wwtp_pubs_raw.csv"))
+write_csv(x = phos_soil_pubs_raw,  path = paste0(tabular_raw_data_path, "phos_soil_pubs_raw.csv"))
+write_csv(x = phos_sed_pubs_raw,  path = paste0(tabular_raw_data_path, "phos_sed_pubs_raw.csv"))
+write_csv(x = phos_lake_pubs_raw,  path = paste0(tabular_raw_data_path, "phos_lake_pubs_raw.csv"))
+write_csv(x = phos_stream_pubs_raw,  path = paste0(tabular_raw_data_path, "phos_stream_pubs_raw.csv"))
+write_csv(x = phos_river_pubs_raw,  path = paste0(tabular_raw_data_path, "phos_river_pubs_raw.csv"))
+write_csv(x = phos_fw_pubs_raw,  path = paste0(tabular_raw_data_path, "phos_fw_pubs_raw.csv"))
+write_csv(x = phos_marine_pubs_raw,  path = paste0(tabular_raw_data_path, "phos_marine_pubs_raw.csv"))
+write_csv(x = phos_ocean_pubs_raw,  path = paste0(tabular_raw_data_path, "phos_ocean_pubs_raw.csv"))
+write_csv(x = phos_sw_pubs_raw,  path = paste0(tabular_raw_data_path, "phos_sw_pubs_raw.csv"))
+write_csv(x = phos_ag_pubs_raw,  path = paste0(tabular_raw_data_path, "phos_ag_pubs_raw.csv"))
+
+# bind rows
+phos_all_searches_pubs_raw <- bind_rows(phos_pubs_raw, phos_wwtp_pubs_raw,
+                                        phos_soil_pubs_raw, phos_sed_pubs_raw,
+                                        phos_lake_pubs_raw, phos_stream_pubs_raw,
+                                        phos_river_pubs_raw, phos_fw_pubs_raw,
+                                        phos_marine_pubs_raw, phos_ocean_pubs_raw,
+                                        phos_sw_pubs_raw, phos_ag_pubs_raw)
+
+# export full dataset
+write_csv(x = phos_all_searches_pubs_raw, path = paste0(tabular_raw_data_path, "phos_all_searches_pubs_raw.csv"))
+
+
+# ---- 4. "microbiology" search ----
 # as of 20200225 at 10am
 
 # search for articles
