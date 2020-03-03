@@ -17,8 +17,10 @@ tabular_raw_data_path <- "/Users/sheila/Documents/phd/pao_lit_review/pao-review-
 # rwos docs
 # https://github.com/juba/rwos
 
+# lite API only (limited metadata returned)
 # options: "SCI", "IC", "ISTP", "ISSHP"
-# USFS only authorized for "SCI"
+# more info on editions here: http://help.incites.clarivate.com/wosWebServicesLite/dbEditionsOptionsGroup/databaseEditionsWos.html
+# USFS only authorized for "SCI" (Science Citation Index Expanded)
 # http://help.incites.clarivate.com/inCites2Live/dataAndSubscriptionNotificationsGroup/dataAndSubsNotice.html
 
 
