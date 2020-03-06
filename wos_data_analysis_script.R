@@ -44,7 +44,7 @@ phos_pubs_data <- phos_pubs_data_raw %>%
          keywords_fix = str_to_lower(str_replace_all(keywords, " \\|\\ ", ",")),
          authors_fix = str_to_lower(str_replace_all(str_replace_all(str_replace_all(str_replace_all(authors, ", ", "_"), " \\|\\ ", ","), " ", "_"), "\\.", "")),
          journal_short = if_else(str_count(journal_fix, " ") >= 3, paste0(word(journal_fix, start = 1, end = 3), "..."), journal_fix)) %>%
-  select(uid, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category) %>%
+  select(uid, title, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category) %>%
   #   mutate(category = fct_relevel(category, "all", "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
   #          environment = fct_relevel(environment, "all", "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
   mutate(category = fct_relevel(category, "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
@@ -58,7 +58,7 @@ microbio_pubs_data <- microbio_pubs_data_raw %>%
          keywords_fix = str_to_lower(str_replace_all(keywords, " \\|\\ ", ",")),
          authors_fix = str_to_lower(str_replace_all(str_replace_all(str_replace_all(str_replace_all(authors, ", ", "_"), " \\|\\ ", ","), " ", "_"), "\\.", "")),
          journal_short = if_else(str_count(journal_fix, " ") >= 3, paste0(word(journal_fix, start = 1, end = 3), "..."), journal_fix)) %>%
-  select(uid, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category) %>%
+  select(uid, title, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category) %>%
   #   mutate(category = fct_relevel(category, "all", "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
   #          environment = fct_relevel(environment, "all", "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
   filter(category != "all") %>% # exclude "all" category for now (since can't get more than 100K entries from wos)
@@ -71,7 +71,7 @@ polyp_pubs_data <- polyp_pubs_data_raw %>%
          journal_fix = str_replace_all(str_to_title(journal), c(" Of " = " of ", " The " = " the ", "And" = "and", "&" = "and", " In " = " in ", " Et " = " et ")),         keywords_fix = str_to_lower(str_replace_all(keywords, " \\|\\ ", ",")),
          authors_fix = str_to_lower(str_replace_all(str_replace_all(str_replace_all(str_replace_all(authors, ", ", "_"), " \\|\\ ", ","), " ", "_"), "\\.", "")),
          journal_short = if_else(str_count(journal_fix, " ") >= 3, paste0(word(journal_fix, start = 1, end = 3), "..."), journal_fix)) %>%
-  select(uid, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category) %>%
+  select(uid, title, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category) %>%
   #   mutate(category = fct_relevel(category, "all", "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
   #          environment = fct_relevel(environment, "all", "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
   filter(category != "all") %>% # exclude "all" category for now (since can't get more than 100K entries from wos)
@@ -84,7 +84,7 @@ pao_pubs_data <- pao_pubs_data_raw %>%
          journal_fix = str_replace_all(str_to_title(journal), c(" Of " = " of ", " The " = " the ", "And" = "and", "&" = "and", " In " = " in ", " Et " = " et ")),         keywords_fix = str_to_lower(str_replace_all(keywords, " \\|\\ ", ",")),
          authors_fix = str_to_lower(str_replace_all(str_replace_all(str_replace_all(str_replace_all(authors, ", ", "_"), " \\|\\ ", ","), " ", "_"), "\\.", "")),
          journal_short = if_else(str_count(journal_fix, " ") >= 3, paste0(word(journal_fix, start = 1, end = 3), "..."), journal_fix)) %>%
-  select(uid, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category) %>%
+  select(uid, title, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category) %>%
   #   mutate(category = fct_relevel(category, "all", "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
   #          environment = fct_relevel(environment, "all", "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
   filter(category != "all") %>% # exclude "all" category for now (since can't get more than 100K entries from wos)
@@ -424,6 +424,50 @@ pao_author_pub_count_data <- pao_author_data %>%
   
 # ---- 8.1 overlapping journal articles ----
 
+# count number of papers that overlap between searches
+phos_pubs_overlap_summary <- phos_pubs_data %>%
+  group_by(uid) %>%
+  count(name = "n_overlaps") %>%
+  ungroup()
+
+# count number of overlapping papers
+phos_pubs_overlap_count <- phos_pubs_overlap_summary %>%
+  group_by(n_overlaps) %>%
+  count(name = "n_papers")
+
+# check that lengths match
+sum(phos_pubs_overlap_count$n_papers)
+length(unique(phos_pubs_data$uid))
+
+phos_pubs_overlap_data <- phos_pubs_data %>%
+  left_join(phos_pubs_overlap_summary, by = "uid")  %>%
+  #filter(n_overlaps > 1) %>%
+  select(uid, title, n_overlaps, environment) %>%
+  arrange(n_overlaps, uid)
+
+# TODO have to figure out to how to get environment column to have list of all environments
+
+# upset plot
+install.packages("ggupset")
+library(ggupset)
+ggplot(data = phos_pubs_data %>% select(uid, environment), aes(x = environment)) +
+  geom_bar() +
+  scale_x_upset(n_intersections = 10)
+
+data0 <- Titanic
+data1 <- reshape2::melt(Titanic)
+data2 <- gather_set_data(data1, 1:4)
+ggplot(data2, aes(x, id = id, split = y, value = value)) +
+  geom_parallel_sets(aes(fill = Sex), alpha = 0.3, axis.width = 0.1) +
+  geom_parallel_sets_axes(axis.width = 0.1) +
+  geom_parallel_sets_labels(colour = 'white')
+
+blah0 <- tidy_movies 
+blah1 <- blah0 %>%
+  distinct(title, year, length, .keep_all=TRUE)
+ggplot(data = blah1, aes(x=Genres)) +
+  geom_bar() +
+  scale_x_upset(n_intersections = 20)
 
 
 # ---- TO DO LIST ----
