@@ -6,6 +6,7 @@ library(here)
 library(ggforce)
 # library(gtable)
 library(gridExtra)
+library(ggupset)
 
 # define paths 
 # tabular_raw_data_path <- here("data", "tabular", "wos_raw_data")
@@ -44,11 +45,11 @@ phos_pubs_data <- phos_pubs_data_raw %>%
          keywords_fix = str_to_lower(str_replace_all(keywords, " \\|\\ ", ",")),
          authors_fix = str_to_lower(str_replace_all(str_replace_all(str_replace_all(str_replace_all(authors, ", ", "_"), " \\|\\ ", ","), " ", "_"), "\\.", "")),
          journal_short = if_else(str_count(journal_fix, " ") >= 3, paste0(word(journal_fix, start = 1, end = 3), "..."), journal_fix)) %>%
-  select(uid, title, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category) %>%
+  select(uid, title, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category) # %>%
   #   mutate(category = fct_relevel(category, "all", "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
   #          environment = fct_relevel(environment, "all", "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
-  mutate(category = fct_relevel(category, "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
-         environment = fct_relevel(environment, "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture")) # there's no "all" category yet...
+  # mutate(category = fct_relevel(category, "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
+  #        environment = fct_relevel(environment, "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture")) # there's no "all" category yet...
 # exclude "all" category for now (since can't get more than 100K entries from wos)
 
 # wrangle microbio data
@@ -58,12 +59,12 @@ microbio_pubs_data <- microbio_pubs_data_raw %>%
          keywords_fix = str_to_lower(str_replace_all(keywords, " \\|\\ ", ",")),
          authors_fix = str_to_lower(str_replace_all(str_replace_all(str_replace_all(str_replace_all(authors, ", ", "_"), " \\|\\ ", ","), " ", "_"), "\\.", "")),
          journal_short = if_else(str_count(journal_fix, " ") >= 3, paste0(word(journal_fix, start = 1, end = 3), "..."), journal_fix)) %>%
-  select(uid, title, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category) %>%
+  select(uid, title, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category) # %>%
   #   mutate(category = fct_relevel(category, "all", "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
   #          environment = fct_relevel(environment, "all", "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
-  filter(category != "all") %>% # exclude "all" category for now (since can't get more than 100K entries from wos)
-  mutate(category = fct_relevel(category, "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
-         environment = fct_relevel(environment, "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
+  # filter(category != "all") %>% # exclude "all" category for now (since can't get more than 100K entries from wos)
+  # mutate(category = fct_relevel(category, "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
+  #        environment = fct_relevel(environment, "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
 
 # wrangle polyp data
 polyp_pubs_data <- polyp_pubs_data_raw %>%
@@ -71,12 +72,12 @@ polyp_pubs_data <- polyp_pubs_data_raw %>%
          journal_fix = str_replace_all(str_to_title(journal), c(" Of " = " of ", " The " = " the ", "And" = "and", "&" = "and", " In " = " in ", " Et " = " et ")),         keywords_fix = str_to_lower(str_replace_all(keywords, " \\|\\ ", ",")),
          authors_fix = str_to_lower(str_replace_all(str_replace_all(str_replace_all(str_replace_all(authors, ", ", "_"), " \\|\\ ", ","), " ", "_"), "\\.", "")),
          journal_short = if_else(str_count(journal_fix, " ") >= 3, paste0(word(journal_fix, start = 1, end = 3), "..."), journal_fix)) %>%
-  select(uid, title, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category) %>%
+  select(uid, title, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category) # %>%
   #   mutate(category = fct_relevel(category, "all", "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
   #          environment = fct_relevel(environment, "all", "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
-  filter(category != "all") %>% # exclude "all" category for now (since can't get more than 100K entries from wos)
-  mutate(category = fct_relevel(category, "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
-         environment = fct_relevel(environment, "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
+  # filter(category != "all") %>% # exclude "all" category for now (since can't get more than 100K entries from wos)
+  # mutate(category = fct_relevel(category, "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
+         # environment = fct_relevel(environment, "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
 
 # wrangle pao data
 pao_pubs_data <- pao_pubs_data_raw %>%
@@ -84,12 +85,12 @@ pao_pubs_data <- pao_pubs_data_raw %>%
          journal_fix = str_replace_all(str_to_title(journal), c(" Of " = " of ", " The " = " the ", "And" = "and", "&" = "and", " In " = " in ", " Et " = " et ")),         keywords_fix = str_to_lower(str_replace_all(keywords, " \\|\\ ", ",")),
          authors_fix = str_to_lower(str_replace_all(str_replace_all(str_replace_all(str_replace_all(authors, ", ", "_"), " \\|\\ ", ","), " ", "_"), "\\.", "")),
          journal_short = if_else(str_count(journal_fix, " ") >= 3, paste0(word(journal_fix, start = 1, end = 3), "..."), journal_fix)) %>%
-  select(uid, title, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category) %>%
+  select(uid, title, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category) # %>%
   #   mutate(category = fct_relevel(category, "all", "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
   #          environment = fct_relevel(environment, "all", "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
-  filter(category != "all") %>% # exclude "all" category for now (since can't get more than 100K entries from wos)
-  mutate(category = fct_relevel(category, "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
-         environment = fct_relevel(environment, "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
+  # filter(category != "all") %>% # exclude "all" category for now (since can't get more than 100K entries from wos)
+  # mutate(category = fct_relevel(category, "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
+  #        environment = fct_relevel(environment, "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
 # mutate(keywords_fix = str_replace_all(str_replace_all(str_to_lower(keywords), " ", "_"), "_\\|_", ",")) %>%
 # separate(keywords_fix, into = paste("keyword_", 1:10, sep = ""), sep = ",") %>%
 # select(-keywords) %>%
@@ -101,6 +102,7 @@ pao_pubs_data <- pao_pubs_data_raw %>%
 phos_journal_lookup <- phos_pubs_data %>%
   select(journal_fix, journal_short) %>%
   distinct(journal_fix, journal_short)
+# phosphorus lookup table excludes "all" category for now (since can't get more than 100K entries from wos)
 
 # microbio journal look-up
 microbio_journal_lookup <- microbio_pubs_data %>%
@@ -131,8 +133,20 @@ paper_counts_data_summary <- paper_counts_data %>%
 # pao = 464
 # but there could totally be overlap here!
 
-# only calculate fractions for specific environments
+
+# calculate fractions for broad categories
 paper_counts_data_frac <- paper_counts_data %>%
+  filter(category != "all") %>%
+  group_by(keyword, category) %>%
+  summarize(count_sum = sum(count)) %>%
+  mutate(total_collect = if_else(keyword == "phos", 183683,
+                                 if_else(keyword == "microbio", 25359,
+                                         if_else(keyword == "polyp", 9217, 796)))) %>%
+  mutate(count_perc = round(count_sum/total_collect * 100, digits = 1),
+         count_perc_text = paste0(count_perc, "%"))
+
+# calculate fractions for specific environments
+paper_counts_data_frac_envir <- paper_counts_data %>%
   filter(category != "all") %>%
   mutate(total_collect = if_else(keyword == "phos", 183683,
                                  if_else(keyword == "microbio", 25359,
@@ -141,13 +155,91 @@ paper_counts_data_frac <- paper_counts_data %>%
          count_perc_text = paste0(count_perc, "%"))
 
 
-# ---- 4.2 plot overall pub counts ----
+# ---- 4.2 plot overall pub counts (broad categories) ----
 # define colors
 # my_category_colors_all <- c("white", "lightgoldenrod", "darkolivegreen3", "lightskyblue", "darkcyan", "sienna")
 my_category_colors <- c("lightgoldenrod", "darkolivegreen3", "lightskyblue", "darkcyan", "sienna")
 
 # phosphorus papers
-p1 <- ggplot(data = paper_counts_data_frac %>% filter(keyword == "phos")) +
+p11 <- ggplot(data = paper_counts_data_frac %>% filter(keyword == "phos")) +
+  geom_col(aes(x = category, y = count_sum, fill = category), color = "black") +
+  geom_text(aes(x = category, y = count_sum + 1500, label = count_perc_text)) +
+  xlab("") +
+  ylab("Number of WOS Articles") +
+  ylim(0, 60000) +
+  scale_fill_manual(values = my_category_colors) +
+  annotate("text", x = 1, y = 60000, label = "(a) 'phosphorus' (total collection = 183,683)", size = 4, hjust = 0) +
+  theme_classic() +
+  theme(axis.title.x = element_text(size = 12),
+        axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        axis.text = element_text(size = 12), 
+        legend.position = "none")
+
+# microbiology papers
+p12 <- ggplot(data = paper_counts_data_frac %>% filter(keyword == "microbio")) +
+  geom_col(aes(x = category, y = count_sum, fill = category), color = "black") +
+  geom_text(aes(x = category, y = count_sum + 40, label = count_perc_text)) +
+  xlab("") +
+  ylab("") +
+  ylim(0, 2000) +
+  scale_fill_manual(values = my_category_colors) +
+  annotate("text", x = 1, y = 2000, label = "(b) 'microbiology' (total collection = 25,359)", size = 4, hjust = 0) +
+  theme_classic() +
+  theme(axis.title.x = element_text(size = 12),
+        axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        axis.text = element_text(size = 12), 
+        legend.position = "none")
+
+# polyp papers
+p13 <- ggplot(data = paper_counts_data_frac %>% filter(keyword == "polyp")) +
+  geom_col(aes(x = category, y = count_sum, fill = category), color = "black") +
+  geom_text(aes(x = category, y = count_sum + 25, label = count_perc_text)) +
+  xlab("Environment") +
+  ylab("Number of WOS Articles") +
+  ylim(0, 650) +
+  scale_fill_manual(values = my_category_colors) +
+  annotate("text", x = 1, y = 650, label = "(c) 'polyphosphate' (total collection = 9,217)", size = 4, hjust = 0) +
+  theme_classic() +
+  theme(axis.title.x = element_text(size = 12),
+        axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        axis.text = element_text(size = 12), 
+        legend.position = "none")
+
+# pao papers
+p14 <- ggplot(data = paper_counts_data_frac %>% filter(keyword == "pao")) +
+  geom_col(aes(x = category, y = count_sum, fill = category), color = "black") +
+  geom_text(aes(x = category, y = count_sum + 15, label = count_perc_text)) +
+  xlab("Environment") +
+  ylab("") +
+  ylim(0, 450) +
+  scale_fill_manual(values = my_category_colors) +
+  annotate("text", x = 1, y = 450, label = "(d) 'polyphosphate accumulating organisms'\n     (total collection = 796)", size = 4, hjust = 0) +
+  theme_classic() +
+  theme(axis.title.x = element_text(size = 12),
+        axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        axis.text = element_text(size = 12),
+        legend.position = "none")
+
+# plot together
+# https://cran.r-project.org/web/packages/egg/vignettes/Ecosystem.html
+grid.arrange(p11, p12, p13, p14, nrow = 2)
+
+
+# ---- 4.3 plot overall pub counts (specific environments) ----
+# define colors
+# my_category_colors_all <- c("white", "lightgoldenrod", "darkolivegreen3", "lightskyblue", "darkcyan", "sienna")
+my_category_colors <- c("lightgoldenrod", "darkolivegreen3", "lightskyblue", "darkcyan", "sienna")
+
+# phosphorus papers
+p1 <- ggplot(data = paper_counts_data_frac_envir %>% filter(keyword == "phos")) +
   geom_col(aes(x = environment, y = count, fill = category), color = "black") +
   geom_text(aes(x = environment, y = count + 1500, label = count_perc_text)) +
   xlab("") +
@@ -164,7 +256,7 @@ p1 <- ggplot(data = paper_counts_data_frac %>% filter(keyword == "phos")) +
         legend.position = "none")
 
 # microbiology papers
-p2 <- ggplot(data = paper_counts_data_frac %>% filter(keyword == "microbio")) +
+p2 <- ggplot(data = paper_counts_data_frac_envir %>% filter(keyword == "microbio")) +
   geom_col(aes(x = environment, y = count, fill = category), color = "black") +
   geom_text(aes(x = environment, y = count + 40, label = count_perc_text)) +
   xlab("") +
@@ -181,7 +273,7 @@ p2 <- ggplot(data = paper_counts_data_frac %>% filter(keyword == "microbio")) +
         legend.position = "none")
 
 # polyp papers
-p3 <- ggplot(data = paper_counts_data_frac %>% filter(keyword == "polyp")) +
+p3 <- ggplot(data = paper_counts_data_frac_envir %>% filter(keyword == "polyp")) +
   geom_col(aes(x = environment, y = count, fill = category), color = "black") +
   geom_text(aes(x = environment, y = count + 25, label = count_perc_text)) +
   xlab("Environment") +
@@ -198,7 +290,7 @@ p3 <- ggplot(data = paper_counts_data_frac %>% filter(keyword == "polyp")) +
         legend.position = "none")
 
 # pao papers
-p4 <- ggplot(data = paper_counts_data_frac %>% filter(keyword == "pao")) +
+p4 <- ggplot(data = paper_counts_data_frac_envir %>% filter(keyword == "pao")) +
   geom_col(aes(x = environment, y = count, fill = category), color = "black") +
   geom_text(aes(x = environment, y = count + 15, label = count_perc_text)) +
   xlab("Environment") +
@@ -306,6 +398,7 @@ grid.arrange(p5, p6, nrow = 1)
 # ---- 6.1 calculate journal-specific pub counts ----
 # phos pubs per jounal (top journal)
 phos_pubs_journal_data <- phos_pubs_data %>%
+  filter(category != "all") %>% # exclude "all" category for now
   group_by(category, journal_fix) %>%
   count() %>%
   ungroup() %>%
@@ -318,6 +411,7 @@ phos_pubs_journal_data <- phos_pubs_data %>%
 
 # microbio pubs per jounal (top journal)
 microbio_pubs_journal_data <- microbio_pubs_data %>%
+  filter(category != "all") %>% # exclude "all" category for now
   group_by(category, journal_fix) %>%
   count() %>%
   ungroup() %>%
@@ -330,6 +424,7 @@ microbio_pubs_journal_data <- microbio_pubs_data %>%
 
 # polyp pubs per jounal (top journal)
 polyp_pubs_journal_data <- polyp_pubs_data %>%
+  filter(category != "all") %>% # exclude "all" category for now
   group_by(category, journal_fix) %>%
   count() %>%
   ungroup() %>%
@@ -340,9 +435,9 @@ polyp_pubs_journal_data <- polyp_pubs_data %>%
   # mutate(category = fct_relevel(category, "all", "wwtp", "terrestrial", "freshwater", "marine", "agriculture"))
   mutate(category = fct_relevel(category, "wwtp", "terrestrial", "freshwater", "marine", "agriculture"))
 
-
 # pao pubs per jounal (top journal)
 pao_pubs_journal_data <- pao_pubs_data %>%
+  filter(category != "all") %>% # exclude "all" category for now
   group_by(category, journal_fix) %>%
   count() %>%
   ungroup() %>%
@@ -356,7 +451,7 @@ pao_pubs_journal_data <- pao_pubs_data %>%
 
 # ---- 6.2 plot journal-specific pub counts ----
 # define colors
-my_category_colors_all <- c("white", "lightgoldenrod", "darkolivegreen3", "lightskyblue", "darkcyan", "sienna")
+# my_category_colors_all <- c("white", "lightgoldenrod", "darkolivegreen3", "lightskyblue", "darkcyan", "sienna")
 my_category_colors <- c("lightgoldenrod", "darkolivegreen3", "lightskyblue", "darkcyan", "sienna")
 
 # microbiology results
@@ -364,7 +459,7 @@ ggplot(data = microbio_pubs_journal_data) +
   geom_col(aes(x = journal_fix, y = n, fill = category), color = "black") +
   xlab("Journal") +
   ylab("Number of WOS Articles Returned") +
-  scale_fill_manual(values = my_category_colors_all) +
+  scale_fill_manual(values = my_category_colors) +
   theme_classic() +
   theme(axis.title.x = element_text(size = 12),
         axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 12),
@@ -374,7 +469,7 @@ ggplot(data = microbio_pubs_journal_data) +
 
 
 # ---- 7.1 author counts ----
-# phosphate
+# phosphorus
 phos_author_data <- phos_pubs_data %>%
   select(uid, category, environment, authors_fix) %>%
   mutate(authors_count = str_count(authors_fix, ',') + 1, 
@@ -391,16 +486,13 @@ phos_author_pub_count_data <- phos_author_data %>%
   count() %>% 
   ungroup() %>%
   group_by(category) %>%
-  mutate(author_rank = dense_rank(desc(n))) %>%
-  filter(author_rank <= 2) %>%
-  ungroup()
-
-# andrew sharpley is only coming up 2 times, helen jarvie only 3
-# maybe people don't really use phosphorus as a keyword...
-# some papers have over lots of co-authors (e.g., "Atlas of modern dinoflagellate cyst distribution based on 2405 data points" had 42 authors!)
+  mutate(author_rank = dense_rank(desc(n))) #%>%
+  # filter(author_rank <= 2) %>%
+  # ungroup()
 
 # paos
 pao_author_data <- pao_pubs_data %>%
+  filter(category != "all") %>%
   select(uid, category, environment, authors_fix) %>%
   mutate(authors_count = str_count(authors_fix, ',') + 1, 
          authors_list = str_split(authors_fix, ',')) %>%
@@ -416,13 +508,120 @@ pao_author_pub_count_data <- pao_author_data %>%
   count() %>% 
   ungroup() %>%
   group_by(category) %>%
-  mutate(author_rank = dense_rank(desc(n))) %>%
-  filter(author_rank <= 1) %>%
-  ungroup()
+  mutate(author_rank = dense_rank(desc(n))) # %>%
+  # filter(author_rank <= 1) %>%
+  # ungroup()
   
 
   
 # ---- 8.1 overlapping journal articles ----
+# phosphorus
+phos_set_data <- phos_pubs_data %>%
+  select(uid, category) %>%
+  group_by(uid) %>%
+  summarize(category = str_split(paste(unique(category), collapse = ", "), pattern = ", "), 
+            count = n()) #%>%
+  # filter(count > 1)
+  
+# microbio
+microbio_set_data <- microbio_pubs_data %>%
+  filter(category != "all") %>%
+  select(uid, category) %>%
+  group_by(uid) %>%
+  summarize(category = str_split(paste(category, collapse = ", "), pattern = ", "), 
+            count = n()) #%>%
+  # filter(count > 1)
+
+# polyp
+polyp_set_data <- polyp_pubs_data %>%
+  filter(category != "all") %>%
+  select(uid, category) %>%
+  group_by(uid) %>%
+  summarize(category = str_split(paste(category, collapse = ", "), pattern = ", "), 
+            count = n()) #%>%
+  # filter(count > 1)
+
+# pao
+pao_set_data <- pao_pubs_data %>%
+  filter(category != "all") %>%
+  select(uid, category) %>%
+  group_by(uid) %>%
+  summarize(category = str_split(paste(category, collapse = ", "), pattern = ", "), 
+            count = n()) #%>%
+  # filter(count > 1)
+
+# plot
+p7 <- ggplot(data = phos_set_data, aes(x = category)) +
+  geom_bar() +
+  # geom_text(stat = 'count', aes(label = ..count..), vjust = -1) +
+  xlab("") +
+  ylab("Number of WOS Articles") +
+  ylim(0, 20000) +
+  theme_classic() +
+  annotate("text", x = 1, y = 20000, label = "(a) 'phosphorus'", size = 4, hjust = 0) +
+  scale_x_upset()
+
+p8 <- ggplot(data = microbio_set_data, aes(x = category)) +
+  geom_bar() +
+  xlab("") +
+  ylab("") +
+  ylim(0, 1000) +
+  theme_classic() +
+  annotate("text", x = 1, y = 1000, label = "(b) 'microbiology'", size = 4, hjust = 0) +
+  scale_x_upset()
+
+p9 <- ggplot(data = polyp_set_data, aes(x = category)) +
+  geom_bar() +
+  xlab("Environment") +
+  ylab("Number of WOS Articles") +
+  ylim(0, 500) +
+  theme_classic() +
+  annotate("text", x = 1, y = 500, label = "(c) 'polyphosphate'", size = 4, hjust = 0) +
+  scale_x_upset()
+
+p10 <- ggplot(data = pao_set_data, aes(x = category)) +
+  geom_bar() +
+  xlab("Environment") +
+  ylab("") +
+  ylim(0, 400) +
+  theme_classic() +
+  annotate("text", x = 1, y = 400, label = "(d) 'polyphosphate accumulating organisms'", size = 4, hjust = 0) +
+  scale_x_upset()
+
+# plot together
+# https://cran.r-project.org/web/packages/egg/vignettes/Ecosystem.html
+grid.arrange(p7, p8, p9, p10, ncol = 2, nrow = 2)
+
+
+
+
+
+
+# using UpSetR
+# tidy_movies %>%
+#   distinct(title, year, length, .keep_all=TRUE) %>%
+#   unnest() %>%
+#   mutate(GenreMember=1) %>%
+#   spread(Genres, GenreMember, fill=0) %>%
+#   as.data.frame() %>%
+#   UpSetR::upset(sets = c("Action", "Romance", "Short", "Comedy", "Drama"), keep.order = TRUE)
+
+# using parallel sets
+data0 <- Titanic
+data1 <- reshape2::melt(Titanic)
+data2 <- gather_set_data(data1, 1:4)
+ggplot(data2, aes(x, id = id, split = y, value = value)) +
+  geom_parallel_sets(aes(fill = Sex), alpha = 0.3, axis.width = 0.1) +
+  geom_parallel_sets_axes(axis.width = 0.1) +
+  geom_parallel_sets_labels(colour = 'white')
+
+# using ggupset
+blah0 <- tidy_movies 
+blah1 <- blah0 %>%
+  distinct(title, year, length, .keep_all=TRUE)
+ggplot(data = blah1, aes(x=Genres)) +
+  geom_bar() +
+  scale_x_upset(n_intersections = 20)
 
 # count number of papers that overlap between searches
 phos_pubs_overlap_summary <- phos_pubs_data %>%
@@ -432,6 +631,7 @@ phos_pubs_overlap_summary <- phos_pubs_data %>%
 
 # count number of overlapping papers
 phos_pubs_overlap_count <- phos_pubs_overlap_summary %>%
+  filter(category != "all") %>%
   group_by(n_overlaps) %>%
   count(name = "n_papers")
 
@@ -445,36 +645,79 @@ phos_pubs_overlap_data <- phos_pubs_data %>%
   select(uid, title, n_overlaps, environment) %>%
   arrange(n_overlaps, uid)
 
-# TODO have to figure out to how to get environment column to have list of all environments
 
-# upset plot
-install.packages("ggupset")
-library(ggupset)
-ggplot(data = phos_pubs_data %>% select(uid, environment), aes(x = environment)) +
-  geom_bar() +
-  scale_x_upset(n_intersections = 10)
+# ---- 9.1 anti-join for pao and polyp pubs ----
+# polyp
+polyp_all_titles <- polyp_pubs_data %>%
+  filter(category == "all") %>%
+  select(uid, title, journal_fix, keywords_fix)
+polyp_specific_titles <- polyp_pubs_data %>%
+  filter(category != "all") %>%
+  distinct(uid)
+polyp_anti_titles <- anti_join(polyp_all_titles, polyp_specific_titles, by = "uid")
+polyp_anti_journals <- polyp_anti_titles %>%
+  distinct(journal_fix)
 
-data0 <- Titanic
-data1 <- reshape2::melt(Titanic)
-data2 <- gather_set_data(data1, 1:4)
-ggplot(data2, aes(x, id = id, split = y, value = value)) +
-  geom_parallel_sets(aes(fill = Sex), alpha = 0.3, axis.width = 0.1) +
-  geom_parallel_sets_axes(axis.width = 0.1) +
-  geom_parallel_sets_labels(colour = 'white')
+#paos
+pao_all_titles <- pao_pubs_data %>%
+  filter(category == "all") %>%
+  select(uid, title, journal_fix, keywords_fix)
+pao_specific_titles <- pao_pubs_data %>%
+  filter(category != "all") %>%
+  distinct(uid)
+pao_anti_titles <- anti_join(pao_all_titles, pao_specific_titles, by = "uid")
+pao_anti_journals <- pao_anti_titles %>%
+  distinct(journal_fix)
 
-blah0 <- tidy_movies 
-blah1 <- blah0 %>%
-  distinct(title, year, length, .keep_all=TRUE)
-ggplot(data = blah1, aes(x=Genres)) +
-  geom_bar() +
-  scale_x_upset(n_intersections = 20)
+# export to send to jay
+write_csv(x = polyp_anti_titles, path = paste0(here(), "/results/", "polyp_antijoin_titles.csv"))
+write_csv(x = polyp_anti_journals, path = paste0(here(), "/results/", "polyp_antijoin_unique_journals.csv"))
+write_csv(x = pao_anti_titles, path = paste0(here(), "/results/", "pao_antijoin_titles.csv"))
+write_csv(x = pao_anti_journals, path = paste0(here(), "/results/", "pao_antijoin_unique_journals.csv"))
+
+
+# ---- 10.1 dendogram ----
+# https://www.r-graph-gallery.com/340-custom-your-dendrogram-with-dendextend.html
+# mtcars %>% 
+#   select(mpg, cyl, disp) %>% 
+#   dist() %>% 
+#   hclust() %>% 
+#   as.dendrogram() -> dend
+# # plot
+# par(mar=c(7,3,1,1))  # Increase bottom margin to have the complete label
+# plot(dend)
+
+# polyp
+polyp_dendo_data <- polyp_pubs_data %>%
+  select(uid, category) %>%
+  group_by(uid) %>%
+  summarize(category = paste(unique(category), collapse = ", "))
+
+# pao
+pao_dendo_data <- pao_pubs_data %>%
+  select(uid, category) %>%
+  group_by(uid) %>%
+  summarize(category = paste(unique(category), collapse = ", ")) 
+
+# export data for hunter
+write_csv(polyp_dendo_data, paste0("polyp_dendogram_data.csv"))
+write_csv(pao_dendo_data, paste0("pao_dendogram_data.csv"))
+
+# rownames(test) <- test$uid
+# test2 <- test %>% select (-uid)
+# 
+# dist_matrix <- test2[1:100,] %>%
+#   dist()
+# 
+# dend <- dist_matrix %>%
+#   hclust() %>%
+#   as.dendrogram()
 
 
 # ---- TO DO LIST ----
 
-# TODO make table for top 1
-# TODO deal with/calculate overlapping papers...
-# TODO Ryan suggested to normalize by number of pubs in microbiology or some broader field
+# TODO redo wwtp search for "enhanced biological phosphorus removal" and "batch reactor"
+# TODO look up wos pubs per year from 1990 to 2019 to normalize time series data (Ryan and Todd's ideas)
 # TODO Theo asked if spikes were from funding cycle (3-years)?
 
 
