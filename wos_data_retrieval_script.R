@@ -275,3 +275,8 @@ pao_all_searches_pubs_raw <- bind_rows(pao_pubs_raw, pao_wwtp_pubs_raw,
 # export full dataset
 write_csv(x = pao_all_searches_pubs_raw, path = paste0(tabular_raw_data_path, "pao_all_searches_pubs_raw.csv"))
 
+
+# ---- TO DO LIST ----
+
+# TODO redo wwtp search for "enhanced biological phosphorus removal" and "batch reactor"
+
