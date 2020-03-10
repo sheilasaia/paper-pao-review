@@ -35,8 +35,8 @@ pao_pubs_data_raw <- read_csv(paste0(tabular_raw_data_path, "pao_all_searches_pu
 # ---- 3. reformat/wrangle data ----
 # change factor levels of count data
 paper_counts_data <- paper_counts_data_raw %>%
-  mutate(category = fct_relevel(category, "all", "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
-         environment = fct_relevel(environment, "all", "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
+  mutate(category = fct_relevel(category, "all", "wwt", "terrestrial", "freshwater", "marine", "agriculture"),
+         environment = fct_relevel(environment, "all", "wwt", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
 
 # wrangle phosphorus data
 phos_pubs_data <- phos_pubs_data_raw %>%
@@ -46,10 +46,10 @@ phos_pubs_data <- phos_pubs_data_raw %>%
          authors_fix = str_to_lower(str_replace_all(str_replace_all(str_replace_all(str_replace_all(authors, ", ", "_"), " \\|\\ ", ","), " ", "_"), "\\.", "")),
          journal_short = if_else(str_count(journal_fix, " ") >= 3, paste0(word(journal_fix, start = 1, end = 3), "..."), journal_fix)) %>%
   select(uid, title, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category) # %>%
-  #   mutate(category = fct_relevel(category, "all", "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
-  #          environment = fct_relevel(environment, "all", "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
-  # mutate(category = fct_relevel(category, "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
-  #        environment = fct_relevel(environment, "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture")) # there's no "all" category yet...
+  #   mutate(category = fct_relevel(category, "all", "wwt", "terrestrial", "freshwater", "marine", "agriculture"),
+  #          environment = fct_relevel(environment, "all", "wwt", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
+  # mutate(category = fct_relevel(category, "wwt", "terrestrial", "freshwater", "marine", "agriculture"),
+  #        environment = fct_relevel(environment, "wwt", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture")) # there's no "all" category yet...
 # exclude "all" category for now (since can't get more than 100K entries from wos)
 
 # wrangle microbio data
@@ -60,11 +60,11 @@ microbio_pubs_data <- microbio_pubs_data_raw %>%
          authors_fix = str_to_lower(str_replace_all(str_replace_all(str_replace_all(str_replace_all(authors, ", ", "_"), " \\|\\ ", ","), " ", "_"), "\\.", "")),
          journal_short = if_else(str_count(journal_fix, " ") >= 3, paste0(word(journal_fix, start = 1, end = 3), "..."), journal_fix)) %>%
   select(uid, title, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category) # %>%
-  #   mutate(category = fct_relevel(category, "all", "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
-  #          environment = fct_relevel(environment, "all", "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
+  #   mutate(category = fct_relevel(category, "all", "wwt", "terrestrial", "freshwater", "marine", "agriculture"),
+  #          environment = fct_relevel(environment, "all", "wwt", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
   # filter(category != "all") %>% # exclude "all" category for now (since can't get more than 100K entries from wos)
-  # mutate(category = fct_relevel(category, "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
-  #        environment = fct_relevel(environment, "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
+  # mutate(category = fct_relevel(category, "wwt", "terrestrial", "freshwater", "marine", "agriculture"),
+  #        environment = fct_relevel(environment, "wwt", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
 
 # wrangle polyp data
 polyp_pubs_data <- polyp_pubs_data_raw %>%
@@ -73,11 +73,11 @@ polyp_pubs_data <- polyp_pubs_data_raw %>%
          authors_fix = str_to_lower(str_replace_all(str_replace_all(str_replace_all(str_replace_all(authors, ", ", "_"), " \\|\\ ", ","), " ", "_"), "\\.", "")),
          journal_short = if_else(str_count(journal_fix, " ") >= 3, paste0(word(journal_fix, start = 1, end = 3), "..."), journal_fix)) %>%
   select(uid, title, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category) # %>%
-  #   mutate(category = fct_relevel(category, "all", "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
-  #          environment = fct_relevel(environment, "all", "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
+  #   mutate(category = fct_relevel(category, "all", "wwt", "terrestrial", "freshwater", "marine", "agriculture"),
+  #          environment = fct_relevel(environment, "all", "wwt", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
   # filter(category != "all") %>% # exclude "all" category for now (since can't get more than 100K entries from wos)
-  # mutate(category = fct_relevel(category, "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
-         # environment = fct_relevel(environment, "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
+  # mutate(category = fct_relevel(category, "wwt", "terrestrial", "freshwater", "marine", "agriculture"),
+         # environment = fct_relevel(environment, "wwt", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
 
 # wrangle pao data
 pao_pubs_data <- pao_pubs_data_raw %>%
@@ -86,11 +86,11 @@ pao_pubs_data <- pao_pubs_data_raw %>%
          authors_fix = str_to_lower(str_replace_all(str_replace_all(str_replace_all(str_replace_all(authors, ", ", "_"), " \\|\\ ", ","), " ", "_"), "\\.", "")),
          journal_short = if_else(str_count(journal_fix, " ") >= 3, paste0(word(journal_fix, start = 1, end = 3), "..."), journal_fix)) %>%
   select(uid, title, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category) # %>%
-  #   mutate(category = fct_relevel(category, "all", "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
-  #          environment = fct_relevel(environment, "all", "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
+  #   mutate(category = fct_relevel(category, "all", "wwt", "terrestrial", "freshwater", "marine", "agriculture"),
+  #          environment = fct_relevel(environment, "all", "wwt", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
   # filter(category != "all") %>% # exclude "all" category for now (since can't get more than 100K entries from wos)
-  # mutate(category = fct_relevel(category, "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
-  #        environment = fct_relevel(environment, "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
+  # mutate(category = fct_relevel(category, "wwt", "terrestrial", "freshwater", "marine", "agriculture"),
+  #        environment = fct_relevel(environment, "wwt", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
 # mutate(keywords_fix = str_replace_all(str_replace_all(str_to_lower(keywords), " ", "_"), "_\\|_", ",")) %>%
 # separate(keywords_fix, into = paste("keyword_", 1:10, sep = ""), sep = ",") %>%
 # select(-keywords) %>%
@@ -357,11 +357,11 @@ all_pubs_time_data <- bind_rows(phos_pubs_time_data, microbio_pubs_time_data, po
 my_search_shapes = c(21, 22, 23, 24)
 # my_category_colors <- c("lightgoldenrod", "darkolivegreen3", "lightskyblue", "darkcyan", "sienna")
 
-# wwtp results
-p5 <- ggplot(data = all_pubs_time_data %>% filter(category == "wwtp")) +
+# wwt results
+p5 <- ggplot(data = all_pubs_time_data %>% filter(category == "wwt")) +
   geom_line(aes(x = year_fix, y = n, linetype = search)) +
   geom_point(aes(x = year_fix, y = n, shape = search), size = 3, alpha = 0.80, fill = "lightgoldenrod", color = "black") +
-  annotate("text", x = 1990, y = 800, label = "(a) 'wwtp'", size = 4, hjust = 0) +
+  annotate("text", x = 1990, y = 800, label = "(a) 'wwt'", size = 4, hjust = 0) +
   xlab("Year") +
   ylab("Number of WOS Articles Returned (between 1990-2019)") +
   scale_shape_manual(values = my_search_shapes) +
@@ -406,8 +406,8 @@ phos_pubs_journal_data <- phos_pubs_data %>%
   mutate(pub_rank = dense_rank(desc(n))) %>%
   filter(pub_rank <= 5) %>%
   ungroup() %>%
-  # mutate(category = fct_relevel(category, "all", "wwtp", "terrestrial", "freshwater", "marine", "agriculture"))
-  mutate(category = fct_relevel(category, "wwtp", "terrestrial", "freshwater", "marine", "agriculture"))
+  # mutate(category = fct_relevel(category, "all", "wwt", "terrestrial", "freshwater", "marine", "agriculture"))
+  mutate(category = fct_relevel(category, "wwt", "terrestrial", "freshwater", "marine", "agriculture"))
 
 # microbio pubs per jounal (top journal)
 microbio_pubs_journal_data <- microbio_pubs_data %>%
@@ -419,8 +419,8 @@ microbio_pubs_journal_data <- microbio_pubs_data %>%
   mutate(pub_rank = dense_rank(desc(n))) %>%
   filter(pub_rank <= 5) %>%
   ungroup() %>%
-  # mutate(category = fct_relevel(category, "all", "wwtp", "terrestrial", "freshwater", "marine", "agriculture"))
-  mutate(category = fct_relevel(category, "wwtp", "terrestrial", "freshwater", "marine", "agriculture"))
+  # mutate(category = fct_relevel(category, "all", "wwt", "terrestrial", "freshwater", "marine", "agriculture"))
+  mutate(category = fct_relevel(category, "wwt", "terrestrial", "freshwater", "marine", "agriculture"))
 
 # polyp pubs per jounal (top journal)
 polyp_pubs_journal_data <- polyp_pubs_data %>%
@@ -432,8 +432,8 @@ polyp_pubs_journal_data <- polyp_pubs_data %>%
   mutate(pub_rank = dense_rank(desc(n))) %>%
   filter(pub_rank <= 5) %>%
   ungroup() %>%
-  # mutate(category = fct_relevel(category, "all", "wwtp", "terrestrial", "freshwater", "marine", "agriculture"))
-  mutate(category = fct_relevel(category, "wwtp", "terrestrial", "freshwater", "marine", "agriculture"))
+  # mutate(category = fct_relevel(category, "all", "wwt", "terrestrial", "freshwater", "marine", "agriculture"))
+  mutate(category = fct_relevel(category, "wwt", "terrestrial", "freshwater", "marine", "agriculture"))
 
 # pao pubs per jounal (top journal)
 pao_pubs_journal_data <- pao_pubs_data %>%
@@ -445,8 +445,8 @@ pao_pubs_journal_data <- pao_pubs_data %>%
   mutate(pub_rank = dense_rank(desc(n))) %>%
   filter(pub_rank <= 5) %>%
   ungroup() %>%
-  # mutate(category = fct_relevel(category, "all", "wwtp", "terrestrial", "freshwater", "marine", "agriculture"))
-  mutate(category = fct_relevel(category, "wwtp", "terrestrial", "freshwater", "marine", "agriculture"))
+  # mutate(category = fct_relevel(category, "all", "wwt", "terrestrial", "freshwater", "marine", "agriculture"))
+  mutate(category = fct_relevel(category, "wwt", "terrestrial", "freshwater", "marine", "agriculture"))
 
 
 # ---- 6.2 plot journal-specific pub counts ----
@@ -716,7 +716,7 @@ write_csv(pao_dendo_data, paste0("pao_dendogram_data.csv"))
 
 # ---- TO DO LIST ----
 
-# TODO redo wwtp search for "enhanced biological phosphorus removal" and "batch reactor"
+# TODO redo wwt search for "enhanced biological phosphorus removal" and "batch reactor"
 # TODO look up wos pubs per year from 1990 to 2019 to normalize time series data (Ryan and Todd's ideas)
 # TODO Theo asked if spikes were from funding cycle (3-years)?
 
@@ -729,8 +729,8 @@ paper_counts_perc_data <- paper_counts_data_raw %>%
          pao_perc = pao/microbio * 100) %>%
   select(environment, category, polyp_perc, pao_perc) %>%
   pivot_longer(cols = c(polyp_perc, pao_perc), names_to = "keyword", values_to = "count_perc") %>%
-  mutate(category = fct_relevel(category, "all", "wwtp", "terrestrial", "freshwater", "marine", "agriculture"),
-         environment = fct_relevel(environment, "all", "wwtp", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"),
+  mutate(category = fct_relevel(category, "all", "wwt", "terrestrial", "freshwater", "marine", "agriculture"),
+         environment = fct_relevel(environment, "all", "wwt", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"),
          keyword_recode = recode_factor(keyword, "polyp_perc" = "polyP", "pao_perc" = "PAO"))
 
 
