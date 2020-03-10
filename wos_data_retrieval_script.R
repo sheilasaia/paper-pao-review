@@ -278,11 +278,20 @@ write_csv(x = pao_all_searches_pubs_raw, path = paste0(tabular_raw_data_path, "p
 
 # ---- 8. overall search of web of science by year ----
 
-my_1990_search <- wos_search(sid, "PY = 1990", editions = c("SCI")) # ? results found
+# make dataframe to hold search counts
+my_annual_search <- data.frame(year = seq(1990, 2019),
+                               count = rep(NA, 30))
 
+# loop through years
+for (i in 1:30) {
+  temp_search <- wos_search(sid, query = paste0("PY = ", my_annaul_search$year[i]), editions = c("SCI"))
+  my_annual_search$count[i] <- temp_search$results
+}
+
+# export results
+write_csv(x = my_annual_search, path = paste0(tabular_raw_data_path, "wos_annual_paper_counts_raw.csv"))
 
 
 # ---- TO DO LIST ----
 
 # TODO redo wwtp search for "enhanced biological phosphorus removal" and "batch reactor"
-# TODO overall search
