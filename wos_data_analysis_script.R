@@ -16,8 +16,11 @@ tabular_raw_data_path <- "/Users/sheila/Dropbox/aaaaa_transfers/full_submission_
 
 
 # ---- 2. load data ----
-# overall paper counts data
-paper_counts_data_raw <- read_csv(paste0(tabular_raw_data_path, "wos_paper_counts_raw.csv"))
+# overall paper counts data (by topic)
+paper_counts_data_raw <- read_csv(paste0(tabular_raw_data_path, "wos_topical_paper_counts_raw.csv"))
+
+# annual wos paper counts data
+paper_counts_annual_data_raw <- read_csv(paste0(tabular_raw_data_path, "wos_annual_paper_counts_raw.csv"))
 
 # phosphorus wos query data
 phos_pubs_data_raw <- read_csv(paste0(tabular_raw_data_path, "phos_all_searches_pubs_raw.csv"))
@@ -37,6 +40,10 @@ pao_pubs_data_raw <- read_csv(paste0(tabular_raw_data_path, "pao_all_searches_pu
 paper_counts_data <- paper_counts_data_raw %>%
   mutate(category = fct_relevel(category, "all", "wwt", "terrestrial", "freshwater", "marine", "agriculture"),
          environment = fct_relevel(environment, "all", "wwt", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
+
+# wrangle wos annual counts
+paper_counts_annual_data <- paper_counts_annual_data_raw %>%
+  mutate(wos_wide_count_millions = wos_wide_count/1000000)
 
 # wrangle phosphorus data
 phos_pubs_data <- phos_pubs_data_raw %>%
@@ -139,18 +146,18 @@ paper_counts_data_frac <- paper_counts_data %>%
   filter(category != "all") %>%
   group_by(keyword, category) %>%
   summarize(count_sum = sum(count)) %>%
-  mutate(total_collect = if_else(keyword == "phos", 183683,
-                                 if_else(keyword == "microbio", 25359,
-                                         if_else(keyword == "polyp", 9217, 796)))) %>%
+  mutate(total_collect = if_else(keyword == "phos", 184042,
+                                 if_else(keyword == "microbio", 25405,
+                                         if_else(keyword == "polyp", 9230, 797)))) %>%
   mutate(count_perc = round(count_sum/total_collect * 100, digits = 1),
          count_perc_text = paste0(count_perc, "%"))
 
 # calculate fractions for specific environments
 paper_counts_data_frac_envir <- paper_counts_data %>%
   filter(category != "all") %>%
-  mutate(total_collect = if_else(keyword == "phos", 183683,
-                                 if_else(keyword == "microbio", 25359,
-                                         if_else(keyword == "polyp", 9217, 796)))) %>%
+  mutate(total_collect = if_else(keyword == "phos", 184042,
+                                 if_else(keyword == "microbio", 25405,
+                                         if_else(keyword == "polyp", 9230, 797)))) %>%
   mutate(count_perc = round(count/total_collect * 100, digits = 1),
          count_perc_text = paste0(count_perc, "%"))
 
@@ -163,12 +170,12 @@ my_category_colors <- c("lightgoldenrod", "darkolivegreen3", "lightskyblue", "da
 # phosphorus papers
 p11 <- ggplot(data = paper_counts_data_frac %>% filter(keyword == "phos")) +
   geom_col(aes(x = category, y = count_sum, fill = category), color = "black") +
-  geom_text(aes(x = category, y = count_sum + 1500, label = count_perc_text)) +
+  geom_text(aes(x = category, y = count_sum + 2000, label = count_perc_text)) +
   xlab("") +
   ylab("Number of WOS Articles") +
   ylim(0, 60000) +
   scale_fill_manual(values = my_category_colors) +
-  annotate("text", x = 1, y = 60000, label = "(a) 'phosphorus' (total collection = 183,683)", size = 4, hjust = 0) +
+  annotate("text", x = 0.5, y = 60000, label = "(A) 'phosphorus' (n = 184,042)", size = 4, hjust = 0) +
   theme_classic() +
   theme(axis.title.x = element_text(size = 12),
         axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 12),
@@ -180,12 +187,12 @@ p11 <- ggplot(data = paper_counts_data_frac %>% filter(keyword == "phos")) +
 # microbiology papers
 p12 <- ggplot(data = paper_counts_data_frac %>% filter(keyword == "microbio")) +
   geom_col(aes(x = category, y = count_sum, fill = category), color = "black") +
-  geom_text(aes(x = category, y = count_sum + 40, label = count_perc_text)) +
+  geom_text(aes(x = category, y = count_sum + 60, label = count_perc_text)) +
   xlab("") +
   ylab("") +
   ylim(0, 2000) +
   scale_fill_manual(values = my_category_colors) +
-  annotate("text", x = 1, y = 2000, label = "(b) 'microbiology' (total collection = 25,359)", size = 4, hjust = 0) +
+  annotate("text", x = 0.5, y = 2000, label = "(B) 'microbiology' (n = 25,405)", size = 4, hjust = 0) +
   theme_classic() +
   theme(axis.title.x = element_text(size = 12),
         axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 12),
@@ -197,12 +204,12 @@ p12 <- ggplot(data = paper_counts_data_frac %>% filter(keyword == "microbio")) +
 # polyp papers
 p13 <- ggplot(data = paper_counts_data_frac %>% filter(keyword == "polyp")) +
   geom_col(aes(x = category, y = count_sum, fill = category), color = "black") +
-  geom_text(aes(x = category, y = count_sum + 25, label = count_perc_text)) +
-  xlab("Environment") +
+  geom_text(aes(x = category, y = count_sum + 40, label = count_perc_text)) +
+  xlab("Category") +
   ylab("Number of WOS Articles") +
-  ylim(0, 650) +
+  ylim(0, 1250) +
   scale_fill_manual(values = my_category_colors) +
-  annotate("text", x = 1, y = 650, label = "(c) 'polyphosphate' (total collection = 9,217)", size = 4, hjust = 0) +
+  annotate("text", x = 0.5, y = 1200, label = "(C) 'polyphosphate' (n = 9,230)", size = 4, hjust = 0) +
   theme_classic() +
   theme(axis.title.x = element_text(size = 12),
         axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 12),
@@ -214,12 +221,12 @@ p13 <- ggplot(data = paper_counts_data_frac %>% filter(keyword == "polyp")) +
 # pao papers
 p14 <- ggplot(data = paper_counts_data_frac %>% filter(keyword == "pao")) +
   geom_col(aes(x = category, y = count_sum, fill = category), color = "black") +
-  geom_text(aes(x = category, y = count_sum + 15, label = count_perc_text)) +
-  xlab("Environment") +
+  geom_text(aes(x = category, y = count_sum + 40, label = count_perc_text)) +
+  xlab("Category") +
   ylab("") +
-  ylim(0, 450) +
+  ylim(0, 1000) +
   scale_fill_manual(values = my_category_colors) +
-  annotate("text", x = 1, y = 450, label = "(d) 'polyphosphate accumulating organisms'\n     (total collection = 796)", size = 4, hjust = 0) +
+  annotate("text", x = 0.5, y = 1000, label = "(D) 'polyphosphate accumulating organisms' (n = 797)", size = 4, hjust = 0) +
   theme_classic() +
   theme(axis.title.x = element_text(size = 12),
         axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 12),
@@ -246,7 +253,7 @@ p1 <- ggplot(data = paper_counts_data_frac_envir %>% filter(keyword == "phos")) 
   ylab("Number of WOS Articles Returned") +
   ylim(0, 45000) +
   scale_fill_manual(values = my_category_colors) +
-  annotate("text", x = 1, y = 45000, label = "(a) 'phosphorus'\n     (total collection = 183,683)", size = 4, hjust = 0) +
+  annotate("text", x = 1, y = 45000, label = "(A) 'phosphorus' (n = 184,042)", size = 4, hjust = 0) +
   theme_classic() +
   theme(axis.title.x = element_text(size = 12),
         axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 12),
@@ -258,12 +265,12 @@ p1 <- ggplot(data = paper_counts_data_frac_envir %>% filter(keyword == "phos")) 
 # microbiology papers
 p2 <- ggplot(data = paper_counts_data_frac_envir %>% filter(keyword == "microbio")) +
   geom_col(aes(x = environment, y = count, fill = category), color = "black") +
-  geom_text(aes(x = environment, y = count + 40, label = count_perc_text)) +
+  geom_text(aes(x = environment, y = count + 35, label = count_perc_text)) +
   xlab("") +
   ylab("") +
   ylim(0, 1250) +
   scale_fill_manual(values = my_category_colors) +
-  annotate("text", x = 1, y = 1250, label = "(b) 'microbiology'\n     (total collection = 25,359)", size = 4, hjust = 0) +
+  annotate("text", x = 1, y = 1250, label = "(B) 'microbiology' (n = 25,405)", size = 4, hjust = 0) +
   theme_classic() +
   theme(axis.title.x = element_text(size = 12),
         axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 12),
@@ -275,12 +282,12 @@ p2 <- ggplot(data = paper_counts_data_frac_envir %>% filter(keyword == "microbio
 # polyp papers
 p3 <- ggplot(data = paper_counts_data_frac_envir %>% filter(keyword == "polyp")) +
   geom_col(aes(x = environment, y = count, fill = category), color = "black") +
-  geom_text(aes(x = environment, y = count + 25, label = count_perc_text)) +
+  geom_text(aes(x = environment, y = count + 35, label = count_perc_text)) +
   xlab("Environment") +
   ylab("Number of WOS Articles Returned") +
-  ylim(0, 650) +
+  ylim(0, 1250) +
   scale_fill_manual(values = my_category_colors) +
-  annotate("text", x = 1, y = 650, label = "(c) 'polyphosphate'\n     (total collection = 9,217)", size = 4, hjust = 0) +
+  annotate("text", x = 1, y = 1200, label = "(C) 'polyphosphate' (n = 9,230)", size = 4, hjust = 0) +
   theme_classic() +
   theme(axis.title.x = element_text(size = 12),
         axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 12),
@@ -292,12 +299,12 @@ p3 <- ggplot(data = paper_counts_data_frac_envir %>% filter(keyword == "polyp"))
 # pao papers
 p4 <- ggplot(data = paper_counts_data_frac_envir %>% filter(keyword == "pao")) +
   geom_col(aes(x = environment, y = count, fill = category), color = "black") +
-  geom_text(aes(x = environment, y = count + 15, label = count_perc_text)) +
+  geom_text(aes(x = environment, y = count + 25, label = count_perc_text)) +
   xlab("Environment") +
   ylab("") +
-  ylim(0, 450) +
+  ylim(0, 800) +
   scale_fill_manual(values = my_category_colors) +
-  annotate("text", x = 1, y = 450, label = "(d) 'polyphosphate accumulating organisms'\n     (total collection = 796)", size = 4, hjust = 0) +
+  annotate("text", x = 1, y = 800, label = "(D) 'polyphosphate accumulating organisms' (n = 797)", size = 4, hjust = 0) +
   theme_classic() +
   theme(axis.title.x = element_text(size = 12),
         axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 12),
@@ -318,7 +325,11 @@ phos_pubs_time_data <- phos_pubs_data %>%
   count() %>%
   ungroup() %>%
   filter(year_fix >= 1990 & year_fix < 2020) %>%
-  mutate(search = "phosphorus")
+  mutate(year = year_fix) %>%
+  left_join(paper_counts_annual_data, by = "year") %>%
+  mutate(count_frac = (n/wos_wide_count) * 100,
+         search = "phosphorus") %>%
+  select(category, year, count_frac, search)
 
 # microbio pubs vs time
 microbio_pubs_time_data <- microbio_pubs_data %>%
@@ -327,7 +338,11 @@ microbio_pubs_time_data <- microbio_pubs_data %>%
   count() %>%
   ungroup() %>%
   filter(year_fix >= 1990 & year_fix < 2020) %>%
-  mutate(search = "microbiology")
+  mutate(year = year_fix) %>%
+  left_join(paper_counts_annual_data, by = "year") %>%
+  mutate(count_frac = (n/wos_wide_count) * 100,
+         search = "microbiology") %>%
+  select(category, year, count_frac, search)
 
 # polyp pubs vs time
 polyp_pubs_time_data <- polyp_pubs_data %>%
@@ -336,7 +351,11 @@ polyp_pubs_time_data <- polyp_pubs_data %>%
   count() %>%
   ungroup() %>%
   filter(year_fix >= 1990 & year_fix < 2020) %>%
-  mutate(search = "polyphosphate")
+  mutate(year = year_fix) %>%
+  left_join(paper_counts_annual_data, by = "year") %>%
+  mutate(count_frac = (n/wos_wide_count) * 100,
+         search = "polyphosphate") %>%
+  select(category, year, count_frac, search)
 
 # pao pubs vs time
 pao_pubs_time_data <- pao_pubs_data %>%
@@ -344,8 +363,12 @@ pao_pubs_time_data <- pao_pubs_data %>%
   group_by(category, year_fix) %>%
   count() %>%
   ungroup() %>%
-  filter(year_fix >= 1990 & year_fix < 2020) %>%
-  mutate(search = "PAOs")
+  filter(year_fix >= 1990 & year_fix < 2020)  %>%
+  mutate(year = year_fix) %>%
+  left_join(paper_counts_annual_data, by = "year") %>%
+  mutate(count_frac = (n/wos_wide_count) * 100,
+         search = "PAOs") %>%
+  select(category, year, count_frac, search)
   
 # bind datasets
 all_pubs_time_data <- bind_rows(phos_pubs_time_data, microbio_pubs_time_data, polyp_pubs_time_data, pao_pubs_time_data) %>%
@@ -357,13 +380,29 @@ all_pubs_time_data <- bind_rows(phos_pubs_time_data, microbio_pubs_time_data, po
 my_search_shapes = c(21, 22, 23, 24)
 # my_category_colors <- c("lightgoldenrod", "darkolivegreen3", "lightskyblue", "darkcyan", "sienna")
 
-# wwt results
-p5 <- ggplot(data = all_pubs_time_data %>% filter(category == "wwt")) +
-  geom_line(aes(x = year_fix, y = n, linetype = search)) +
-  geom_point(aes(x = year_fix, y = n, shape = search), size = 3, alpha = 0.80, fill = "lightgoldenrod", color = "black") +
-  annotate("text", x = 1990, y = 800, label = "(a) 'wwt'", size = 4, hjust = 0) +
+# annual wos results overall vs time
+ggplot(data = paper_counts_annual_data) +
+  geom_line(aes(x = year, y = wos_wide_count_millions)) +
+  geom_point(aes(x = year, y = wos_wide_count_millions), shape = 21, size = 3, alpha = 0.50, color = "black", fill = "black") +
+  ylim(0, 3) +
   xlab("Year") +
-  ylab("Number of WOS Articles Returned (between 1990-2019)") +
+  ylab("Number of WOS Articles Returned from 1990-2019 (in millions)") +
+  # scale_color_manual(values = my_category_colors) +
+  theme_classic() +
+  theme(axis.title.x = element_text(size = 12),
+        axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        axis.text = element_text(size = 12))
+
+# wwt results vs time
+p5 <- ggplot(data = all_pubs_time_data %>% filter(category == "wwt")) +
+  geom_line(aes(x = year, y = count_frac, linetype = search)) +
+  geom_point(aes(x = year, y = count_frac, shape = search), size = 3, alpha = 0.80, fill = "lightgoldenrod", color = "black") +
+  annotate("text", x = 1990, y = 0.05, label = "(A) 'wwt'", size = 4, hjust = 0) +
+  ylim(0, 0.05) +
+  xlab("Year") +
+  ylab("Percent of WOS Articles Returned from 1990-2019 (%)") +
   scale_shape_manual(values = my_search_shapes) +
   # scale_color_manual(values = my_category_colors) +
   theme_classic() +
@@ -374,11 +413,12 @@ p5 <- ggplot(data = all_pubs_time_data %>% filter(category == "wwt")) +
         axis.text = element_text(size = 12),
         legend.position = "none")
 
-# ag results
+# ag results vs time
 p6 <- ggplot(data = all_pubs_time_data %>% filter(category == "agriculture")) +
-  geom_line(aes(x = year_fix, y = n, linetype = search)) +
-  geom_point(aes(x = year_fix, y = n, shape = search), size = 3, alpha = 0.80, fill = "sienna", color = "black") +
-  annotate("text", x = 1990, y = 200, label = "(b) 'agriculture'", size = 4, hjust = 0) +
+  geom_line(aes(x = year, y = count_frac, linetype = search)) +
+  geom_point(aes(x = year, y = count_frac, shape = search), size = 3, alpha = 0.80, fill = "sienna", color = "black") +
+  annotate("text", x = 1990, y = 0.05, label = "(B) 'agriculture'", size = 4, hjust = 0) +
+  ylim(0, 0.05) +
   xlab("Year") +
   ylab("") +
   scale_shape_manual(values = my_search_shapes) +
@@ -388,11 +428,30 @@ p6 <- ggplot(data = all_pubs_time_data %>% filter(category == "agriculture")) +
         axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 12),
         axis.title.y = element_text(size = 12),
         axis.text.y = element_text(size = 12),
-        axis.text = element_text(size = 12))
+        axis.text = element_text(size = 12),
+        legend.position = "none")
 
 # plot together
 # https://cran.r-project.org/web/packages/egg/vignettes/Ecosystem.html
 grid.arrange(p5, p6, nrow = 1)
+
+# terrestrial results vs time
+ggplot(data = all_pubs_time_data %>% filter(category == "terrestrial")) +
+  geom_line(aes(x = year, y = count_frac, linetype = search)) +
+  geom_point(aes(x = year, y = count_frac, shape = search), size = 3, alpha = 0.80, fill = "darkolivegreen3", color = "black") +
+  annotate("text", x = 1990, y = 0.3, label = "(B) 'terrestrial'", size = 4, hjust = 0) +
+  ylim(0, 0.3) +
+  xlab("Year") +
+  ylab("") +
+  scale_shape_manual(values = my_search_shapes) +
+  # scale_color_manual(values = my_category_colors) +
+  theme_classic() +
+  theme(axis.title.x = element_text(size = 12),
+        axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        axis.text = element_text(size = 12),
+        legend.position = "none")
 
 
 # ---- 6.1 calculate journal-specific pub counts ----
@@ -556,9 +615,9 @@ p7 <- ggplot(data = phos_set_data, aes(x = category)) +
   # geom_text(stat = 'count', aes(label = ..count..), vjust = -1) +
   xlab("") +
   ylab("Number of WOS Articles") +
-  ylim(0, 20000) +
+  ylim(0, 40000) +
   theme_classic() +
-  annotate("text", x = 1, y = 20000, label = "(a) 'phosphorus'", size = 4, hjust = 0) +
+  annotate("text", x = 1, y = 40000, label = "(A) 'phosphorus'", size = 4, hjust = 0) +
   scale_x_upset()
 
 p8 <- ggplot(data = microbio_set_data, aes(x = category)) +
@@ -567,25 +626,25 @@ p8 <- ggplot(data = microbio_set_data, aes(x = category)) +
   ylab("") +
   ylim(0, 1000) +
   theme_classic() +
-  annotate("text", x = 1, y = 1000, label = "(b) 'microbiology'", size = 4, hjust = 0) +
+  annotate("text", x = 1, y = 1000, label = "(B) 'microbiology'", size = 4, hjust = 0) +
   scale_x_upset()
 
 p9 <- ggplot(data = polyp_set_data, aes(x = category)) +
   geom_bar() +
-  xlab("Environment") +
+  xlab("Category") +
   ylab("Number of WOS Articles") +
-  ylim(0, 500) +
+  ylim(0, 1000) +
   theme_classic() +
-  annotate("text", x = 1, y = 500, label = "(c) 'polyphosphate'", size = 4, hjust = 0) +
+  annotate("text", x = 1, y = 1000, label = "(C) 'polyphosphate'", size = 4, hjust = 0) +
   scale_x_upset()
 
 p10 <- ggplot(data = pao_set_data, aes(x = category)) +
   geom_bar() +
-  xlab("Environment") +
+  xlab("Category") +
   ylab("") +
-  ylim(0, 400) +
+  ylim(0, 700) +
   theme_classic() +
-  annotate("text", x = 1, y = 400, label = "(d) 'polyphosphate accumulating organisms'", size = 4, hjust = 0) +
+  annotate("text", x = 1, y = 700, label = "(D) 'polyphosphate accumulating organisms'", size = 4, hjust = 0) +
   scale_x_upset()
 
 # plot together
