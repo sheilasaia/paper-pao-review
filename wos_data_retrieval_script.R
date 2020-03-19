@@ -9,10 +9,8 @@ library(here)
 library(beepr)
 
 # define paths 
-# tabular_raw_data_path <- here("data", "tabular", "wos_raw_data")
-tabular_raw_data_path <- "/Users/sheila/Documents/phd/pao_lit_review/pao-review-analysis/raw_data/" # (use hardcoding for now)
-# tabular_raw_data_path <- "/Users/sheila/Dropbox/aaaaa_transfers/full_submission_mar2020/raw_data/" # (use hardcoding for now)
-
+# data_path <- here("data")
+data_path <- "/Users/sheila/Documents/phd/pao_lit_review/pao-review-analysis/raw_data/" # (use hardcoding for now)
 
 # rwos docs
 # https://github.com/juba/rwos
@@ -68,18 +66,18 @@ phos_ag_pubs_raw <- wos_retrieve_all(phos_ag_result) %>% mutate(environment = "a
 beepr::beep(sound = 5)
 
 # export raw data for future reading in
-# write_csv(x = phos_pubs_raw,  path = paste0(tabular_raw_data_path, "phos_pubs_raw.csv")) # see note above
-write_csv(x = phos_wwt_pubs_raw,  path = paste0(tabular_raw_data_path, "phos_wwt_pubs_raw.csv"))
-write_csv(x = phos_soil_pubs_raw,  path = paste0(tabular_raw_data_path, "phos_soil_pubs_raw.csv"))
-write_csv(x = phos_sed_pubs_raw,  path = paste0(tabular_raw_data_path, "phos_sed_pubs_raw.csv"))
-write_csv(x = phos_lake_pubs_raw,  path = paste0(tabular_raw_data_path, "phos_lake_pubs_raw.csv"))
-write_csv(x = phos_stream_pubs_raw,  path = paste0(tabular_raw_data_path, "phos_stream_pubs_raw.csv"))
-write_csv(x = phos_river_pubs_raw,  path = paste0(tabular_raw_data_path, "phos_river_pubs_raw.csv"))
-write_csv(x = phos_fw_pubs_raw,  path = paste0(tabular_raw_data_path, "phos_fw_pubs_raw.csv"))
-write_csv(x = phos_marine_pubs_raw,  path = paste0(tabular_raw_data_path, "phos_marine_pubs_raw.csv"))
-write_csv(x = phos_ocean_pubs_raw,  path = paste0(tabular_raw_data_path, "phos_ocean_pubs_raw.csv"))
-write_csv(x = phos_sw_pubs_raw,  path = paste0(tabular_raw_data_path, "phos_sw_pubs_raw.csv"))
-write_csv(x = phos_ag_pubs_raw,  path = paste0(tabular_raw_data_path, "phos_ag_pubs_raw.csv"))
+# write_csv(x = phos_pubs_raw,  path = paste0(data_path, "phos_pubs_raw.csv")) # see note above
+write_csv(x = phos_wwt_pubs_raw,  path = paste0(data_path, "phos_wwt_pubs_raw.csv"))
+write_csv(x = phos_soil_pubs_raw,  path = paste0(data_path, "phos_soil_pubs_raw.csv"))
+write_csv(x = phos_sed_pubs_raw,  path = paste0(data_path, "phos_sed_pubs_raw.csv"))
+write_csv(x = phos_lake_pubs_raw,  path = paste0(data_path, "phos_lake_pubs_raw.csv"))
+write_csv(x = phos_stream_pubs_raw,  path = paste0(data_path, "phos_stream_pubs_raw.csv"))
+write_csv(x = phos_river_pubs_raw,  path = paste0(data_path, "phos_river_pubs_raw.csv"))
+write_csv(x = phos_fw_pubs_raw,  path = paste0(data_path, "phos_fw_pubs_raw.csv"))
+write_csv(x = phos_marine_pubs_raw,  path = paste0(data_path, "phos_marine_pubs_raw.csv"))
+write_csv(x = phos_ocean_pubs_raw,  path = paste0(data_path, "phos_ocean_pubs_raw.csv"))
+write_csv(x = phos_sw_pubs_raw,  path = paste0(data_path, "phos_sw_pubs_raw.csv"))
+write_csv(x = phos_ag_pubs_raw,  path = paste0(data_path, "phos_ag_pubs_raw.csv"))
 
 # bind rows
 phos_all_searches_pubs_raw <- bind_rows(phos_wwt_pubs_raw,
@@ -96,7 +94,7 @@ phos_all_searches_pubs_raw <- bind_rows(phos_wwt_pubs_raw,
 #                                         phos_sw_pubs_raw, phos_ag_pubs_raw) # see note above
 
 # export full dataset
-write_csv(x = phos_all_searches_pubs_raw, path = paste0(tabular_raw_data_path, "phos_all_searches_pubs_raw.csv"))
+write_csv(x = phos_all_searches_pubs_raw, path = paste0(data_path, "phos_all_searches_pubs_raw.csv"))
 
 
 # ---- 5. "microbiology" search ----
@@ -133,18 +131,18 @@ microbio_ag_pubs_raw <- wos_retrieve_all(microbio_ag_result) %>% mutate(environm
 beepr::beep(sound = 5)
 
 # export raw data for future reading in
-write_csv(x = microbio_pubs_raw,  path = paste0(tabular_raw_data_path, "microbio_pubs_raw.csv"))
-write_csv(x = microbio_wwt_pubs_raw,  path = paste0(tabular_raw_data_path, "microbio_wwt_pubs_raw.csv"))
-write_csv(x = microbio_soil_pubs_raw,  path = paste0(tabular_raw_data_path, "microbio_soil_pubs_raw.csv"))
-write_csv(x = microbio_sed_pubs_raw,  path = paste0(tabular_raw_data_path, "microbio_sed_pubs_raw.csv"))
-write_csv(x = microbio_lake_pubs_raw,  path = paste0(tabular_raw_data_path, "microbio_lake_pubs_raw.csv"))
-write_csv(x = microbio_stream_pubs_raw,  path = paste0(tabular_raw_data_path, "microbio_stream_pubs_raw.csv"))
-write_csv(x = microbio_river_pubs_raw,  path = paste0(tabular_raw_data_path, "microbio_river_pubs_raw.csv"))
-write_csv(x = microbio_fw_pubs_raw,  path = paste0(tabular_raw_data_path, "microbio_fw_pubs_raw.csv"))
-write_csv(x = microbio_marine_pubs_raw,  path = paste0(tabular_raw_data_path, "microbio_marine_pubs_raw.csv"))
-write_csv(x = microbio_ocean_pubs_raw,  path = paste0(tabular_raw_data_path, "microbio_ocean_pubs_raw.csv"))
-write_csv(x = microbio_sw_pubs_raw,  path = paste0(tabular_raw_data_path, "microbio_sw_pubs_raw.csv"))
-write_csv(x = microbio_ag_pubs_raw,  path = paste0(tabular_raw_data_path, "microbio_ag_pubs_raw.csv"))
+write_csv(x = microbio_pubs_raw,  path = paste0(data_path, "microbio_pubs_raw.csv"))
+write_csv(x = microbio_wwt_pubs_raw,  path = paste0(data_path, "microbio_wwt_pubs_raw.csv"))
+write_csv(x = microbio_soil_pubs_raw,  path = paste0(data_path, "microbio_soil_pubs_raw.csv"))
+write_csv(x = microbio_sed_pubs_raw,  path = paste0(data_path, "microbio_sed_pubs_raw.csv"))
+write_csv(x = microbio_lake_pubs_raw,  path = paste0(data_path, "microbio_lake_pubs_raw.csv"))
+write_csv(x = microbio_stream_pubs_raw,  path = paste0(data_path, "microbio_stream_pubs_raw.csv"))
+write_csv(x = microbio_river_pubs_raw,  path = paste0(data_path, "microbio_river_pubs_raw.csv"))
+write_csv(x = microbio_fw_pubs_raw,  path = paste0(data_path, "microbio_fw_pubs_raw.csv"))
+write_csv(x = microbio_marine_pubs_raw,  path = paste0(data_path, "microbio_marine_pubs_raw.csv"))
+write_csv(x = microbio_ocean_pubs_raw,  path = paste0(data_path, "microbio_ocean_pubs_raw.csv"))
+write_csv(x = microbio_sw_pubs_raw,  path = paste0(data_path, "microbio_sw_pubs_raw.csv"))
+write_csv(x = microbio_ag_pubs_raw,  path = paste0(data_path, "microbio_ag_pubs_raw.csv"))
 
 # bind rows
 microbio_all_searches_pubs_raw <- bind_rows(microbio_pubs_raw, microbio_wwt_pubs_raw,
@@ -155,7 +153,7 @@ microbio_all_searches_pubs_raw <- bind_rows(microbio_pubs_raw, microbio_wwt_pubs
                                             microbio_sw_pubs_raw, microbio_ag_pubs_raw)
 
 # export full dataset
-write_csv(x = microbio_all_searches_pubs_raw, path = paste0(tabular_raw_data_path, "microbio_all_searches_pubs_raw.csv"))
+write_csv(x = microbio_all_searches_pubs_raw, path = paste0(data_path, "microbio_all_searches_pubs_raw.csv"))
 
 
 # ---- 6. "polyphosphate" search ----
@@ -192,18 +190,18 @@ polyp_ag_pubs_raw <- wos_retrieve_all(polyp_ag_result) %>% mutate(environment = 
 beepr::beep(sound = 5)
 
 # export raw data for future reading in
-write_csv(x = polyp_pubs_raw,  path = paste0(tabular_raw_data_path, "polyp_pubs_raw.csv"))
-write_csv(x = polyp_wwt_pubs_raw,  path = paste0(tabular_raw_data_path, "polyp_wwt_pubs_raw.csv"))
-write_csv(x = polyp_soil_pubs_raw,  path = paste0(tabular_raw_data_path, "polyp_soil_pubs_raw.csv"))
-write_csv(x = polyp_sed_pubs_raw,  path = paste0(tabular_raw_data_path, "polyp_sed_pubs_raw.csv"))
-write_csv(x = polyp_lake_pubs_raw,  path = paste0(tabular_raw_data_path, "polyp_lake_pubs_raw.csv"))
-write_csv(x = polyp_stream_pubs_raw,  path = paste0(tabular_raw_data_path, "polyp_stream_pubs_raw.csv"))
-write_csv(x = polyp_river_pubs_raw,  path = paste0(tabular_raw_data_path, "polyp_river_pubs_raw.csv"))
-write_csv(x = polyp_fw_pubs_raw,  path = paste0(tabular_raw_data_path, "polyp_fw_pubs_raw.csv"))
-write_csv(x = polyp_marine_pubs_raw,  path = paste0(tabular_raw_data_path, "polyp_marine_pubs_raw.csv"))
-write_csv(x = polyp_ocean_pubs_raw,  path = paste0(tabular_raw_data_path, "polyp_ocean_pubs_raw.csv"))
-write_csv(x = polyp_sw_pubs_raw,  path = paste0(tabular_raw_data_path, "polyp_sw_pubs_raw.csv"))
-write_csv(x = polyp_ag_pubs_raw,  path = paste0(tabular_raw_data_path, "polyp_ag_pubs_raw.csv"))
+write_csv(x = polyp_pubs_raw,  path = paste0(data_path, "polyp_pubs_raw.csv"))
+write_csv(x = polyp_wwt_pubs_raw,  path = paste0(data_path, "polyp_wwt_pubs_raw.csv"))
+write_csv(x = polyp_soil_pubs_raw,  path = paste0(data_path, "polyp_soil_pubs_raw.csv"))
+write_csv(x = polyp_sed_pubs_raw,  path = paste0(data_path, "polyp_sed_pubs_raw.csv"))
+write_csv(x = polyp_lake_pubs_raw,  path = paste0(data_path, "polyp_lake_pubs_raw.csv"))
+write_csv(x = polyp_stream_pubs_raw,  path = paste0(data_path, "polyp_stream_pubs_raw.csv"))
+write_csv(x = polyp_river_pubs_raw,  path = paste0(data_path, "polyp_river_pubs_raw.csv"))
+write_csv(x = polyp_fw_pubs_raw,  path = paste0(data_path, "polyp_fw_pubs_raw.csv"))
+write_csv(x = polyp_marine_pubs_raw,  path = paste0(data_path, "polyp_marine_pubs_raw.csv"))
+write_csv(x = polyp_ocean_pubs_raw,  path = paste0(data_path, "polyp_ocean_pubs_raw.csv"))
+write_csv(x = polyp_sw_pubs_raw,  path = paste0(data_path, "polyp_sw_pubs_raw.csv"))
+write_csv(x = polyp_ag_pubs_raw,  path = paste0(data_path, "polyp_ag_pubs_raw.csv"))
 
 # bind rows
 polyp_all_searches_pubs_raw <- bind_rows(polyp_pubs_raw, polyp_wwt_pubs_raw,
@@ -214,7 +212,7 @@ polyp_all_searches_pubs_raw <- bind_rows(polyp_pubs_raw, polyp_wwt_pubs_raw,
                                          polyp_sw_pubs_raw, polyp_ag_pubs_raw)
 
 # export full dataset
-write_csv(x = polyp_all_searches_pubs_raw, path = paste0(tabular_raw_data_path, "polyp_all_searches_pubs_raw.csv"))
+write_csv(x = polyp_all_searches_pubs_raw, path = paste0(data_path, "polyp_all_searches_pubs_raw.csv"))
 
 
 # ---- 7. "polyphosphate accumulating organisms" search ----
@@ -251,18 +249,18 @@ pao_ag_pubs_raw <- wos_retrieve_all(pao_ag_result) %>% mutate(environment = "agr
 beepr::beep(sound = 5)
 
 # export raw data for future reading in
-write_csv(x = pao_pubs_raw,  path = paste0(tabular_raw_data_path, "pao_pubs_raw.csv"))
-write_csv(x = pao_wwt_pubs_raw,  path = paste0(tabular_raw_data_path, "pao_wwt_pubs_raw.csv"))
-write_csv(x = pao_soil_pubs_raw,  path = paste0(tabular_raw_data_path, "pao_soil_pubs_raw.csv"))
-write_csv(x = pao_sed_pubs_raw,  path = paste0(tabular_raw_data_path, "pao_sed_pubs_raw.csv"))
-write_csv(x = pao_lake_pubs_raw,  path = paste0(tabular_raw_data_path, "pao_lake_pubs_raw.csv"))
-write_csv(x = pao_stream_pubs_raw,  path = paste0(tabular_raw_data_path, "pao_stream_pubs_raw.csv"))
-write_csv(x = pao_river_pubs_raw,  path = paste0(tabular_raw_data_path, "pao_river_pubs_raw.csv"))
-write_csv(x = pao_fw_pubs_raw,  path = paste0(tabular_raw_data_path, "pao_fw_pubs_raw.csv"))
-write_csv(x = pao_marine_pubs_raw,  path = paste0(tabular_raw_data_path, "pao_marine_pubs_raw.csv"))
-write_csv(x = pao_ocean_pubs_raw,  path = paste0(tabular_raw_data_path, "pao_ocean_pubs_raw.csv"))
-write_csv(x = pao_sw_pubs_raw,  path = paste0(tabular_raw_data_path, "pao_sw_pubs_raw.csv"))
-write_csv(x = pao_ag_pubs_raw,  path = paste0(tabular_raw_data_path, "pao_ag_pubs_raw.csv"))
+write_csv(x = pao_pubs_raw,  path = paste0(data_path, "pao_pubs_raw.csv"))
+write_csv(x = pao_wwt_pubs_raw,  path = paste0(data_path, "pao_wwt_pubs_raw.csv"))
+write_csv(x = pao_soil_pubs_raw,  path = paste0(data_path, "pao_soil_pubs_raw.csv"))
+write_csv(x = pao_sed_pubs_raw,  path = paste0(data_path, "pao_sed_pubs_raw.csv"))
+write_csv(x = pao_lake_pubs_raw,  path = paste0(data_path, "pao_lake_pubs_raw.csv"))
+write_csv(x = pao_stream_pubs_raw,  path = paste0(data_path, "pao_stream_pubs_raw.csv"))
+write_csv(x = pao_river_pubs_raw,  path = paste0(data_path, "pao_river_pubs_raw.csv"))
+write_csv(x = pao_fw_pubs_raw,  path = paste0(data_path, "pao_fw_pubs_raw.csv"))
+write_csv(x = pao_marine_pubs_raw,  path = paste0(data_path, "pao_marine_pubs_raw.csv"))
+write_csv(x = pao_ocean_pubs_raw,  path = paste0(data_path, "pao_ocean_pubs_raw.csv"))
+write_csv(x = pao_sw_pubs_raw,  path = paste0(data_path, "pao_sw_pubs_raw.csv"))
+write_csv(x = pao_ag_pubs_raw,  path = paste0(data_path, "pao_ag_pubs_raw.csv"))
 
 # bind rows
 pao_all_searches_pubs_raw <- bind_rows(pao_pubs_raw, pao_wwt_pubs_raw,
@@ -273,7 +271,7 @@ pao_all_searches_pubs_raw <- bind_rows(pao_pubs_raw, pao_wwt_pubs_raw,
                                        pao_sw_pubs_raw, pao_ag_pubs_raw)
 
 # export full dataset
-write_csv(x = pao_all_searches_pubs_raw, path = paste0(tabular_raw_data_path, "pao_all_searches_pubs_raw.csv"))
+write_csv(x = pao_all_searches_pubs_raw, path = paste0(data_path, "pao_all_searches_pubs_raw.csv"))
 
 
 # ---- 8. overall search of web of science by year ----
@@ -289,9 +287,5 @@ for (i in 1:30) {
 }
 
 # export results
-write_csv(x = my_annual_search, path = paste0(tabular_raw_data_path, "wos_annual_paper_counts_raw.csv"))
+write_csv(x = my_annual_search, path = paste0(data_path, "wos_annual_paper_counts_raw.csv"))
 
-
-# ---- TO DO LIST ----
-
-# TODO redo wwt search for "enhanced biological phosphorus removal" and "batch reactor"
