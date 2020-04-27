@@ -1,4 +1,22 @@
-# web of science data analysis
+
+# ---- script header ----
+# script name: wos_data_analysis_script.R
+# purpose of script: web of science data analysis
+# author: sheila saia
+# date created: 20200207
+# email: ssaia@ncsu.edu
+
+
+# ---- notes ----
+# notes: 
+
+
+# ---- to do ----
+# to do list
+# TODO clean up script
+# TODO fix paths using here()
+# TODO Theo asked if spikes were from funding cycle (3-years)?
+
 
 # ---- 1. load libraries ----
 library(tidyverse)
@@ -8,12 +26,13 @@ library(ggforce)
 library(gridExtra)
 library(ggupset)
 
-# define paths 
-# tabular_raw_data_path <- here("data", "tabular", "wos_raw_data")
-# tabular_raw_data_path <- "/Users/sheila/Documents/phd/pao_lit_review/pao-review-analysis/raw_data/" # (use hardcoding for now)
-# tabular_data_path <- "/Users/sheila/Documents/phd/pao_lit_review/pao-review-analysis/data/"
-tabular_raw_data_path <- "/Users/sheila/Dropbox/aaaaa_transfers/full_submission_mar2020/raw_data/"
-
+# define paths
+# tabular_raw_data_path <- here("data")
+# figure_export_path <- here() # finish this
+# tabular_export_path <- here() # finish this
+tabular_raw_data_path <- "/Users/sheila/Documents/phd/pao_lit_review/pao-review-analysis/raw_data/"
+figure_export_path <- "/Users/sheila/Documents/phd/pao_lit_review/pao-review-analysis/results/figures/"
+tabular_export_path <- "/Users/sheila/Documents/phd/pao_lit_review/pao-review-analysis/results/tabular/"
 
 # ---- 2. load data ----
 # overall paper counts data (by topic)
@@ -140,7 +159,6 @@ paper_counts_data_summary <- paper_counts_data %>%
 # pao = 464
 # but there could totally be overlap here!
 
-
 # calculate fractions for broad categories
 paper_counts_data_frac <- paper_counts_data %>%
   filter(category != "all") %>%
@@ -160,6 +178,18 @@ paper_counts_data_frac_envir <- paper_counts_data %>%
                                          if_else(keyword == "polyp", 9230, 797)))) %>%
   mutate(count_perc = round(count/total_collect * 100, digits = 1),
          count_perc_text = paste0(count_perc, "%"))
+
+# ---- 4.x detailed look at specific articles ----
+# polyp articles in the ag category
+polyp_ag_pubs_data <- polyp_pubs_data %>% 
+  filter(category == "agriculture")
+
+# export polyp ag table
+write_csv(polyp_ag_pubs_data, paste0(tabular_export_path, "polyp_ag_pubs.csv"))
+
+# pao articles in the ag category
+pao_ag_pubs_data <- pao_pubs_data %>% 
+  filter(category == "agriculture")
 
 
 # ---- 4.2 plot overall pub counts (broad categories) ----
@@ -237,7 +267,9 @@ p14 <- ggplot(data = paper_counts_data_frac %>% filter(keyword == "pao")) +
 
 # plot together
 # https://cran.r-project.org/web/packages/egg/vignettes/Ecosystem.html
+pdf(paste0(figure_export_path, "paper_counts_by_category.pdf"), width = 10, height = 10)
 grid.arrange(p11, p12, p13, p14, nrow = 2)
+dev.off()
 
 
 # ---- 4.3 plot overall pub counts (specific environments) ----
@@ -315,7 +347,9 @@ p4 <- ggplot(data = paper_counts_data_frac_envir %>% filter(keyword == "pao")) +
 
 # plot together
 # https://cran.r-project.org/web/packages/egg/vignettes/Ecosystem.html
+pdf(paste0(figure_export_path, "paper_counts_by_environment.pdf"), width = 10, height = 10)
 grid.arrange(p1, p2, p3, p4, nrow = 2)
+dev.off()
 
 
 # ---- 5.1 calculate paper counts over time -----
@@ -329,7 +363,7 @@ phos_pubs_time_data <- phos_pubs_data %>%
   left_join(paper_counts_annual_data, by = "year") %>%
   mutate(count_frac = (n/wos_wide_count) * 100,
          search = "phosphorus") %>%
-  select(category, year, count_frac, search)
+  select(category, year, n, count_frac, search)
 
 # microbio pubs vs time
 microbio_pubs_time_data <- microbio_pubs_data %>%
@@ -342,7 +376,7 @@ microbio_pubs_time_data <- microbio_pubs_data %>%
   left_join(paper_counts_annual_data, by = "year") %>%
   mutate(count_frac = (n/wos_wide_count) * 100,
          search = "microbiology") %>%
-  select(category, year, count_frac, search)
+  select(category, year, n, count_frac, search)
 
 # polyp pubs vs time
 polyp_pubs_time_data <- polyp_pubs_data %>%
@@ -355,7 +389,7 @@ polyp_pubs_time_data <- polyp_pubs_data %>%
   left_join(paper_counts_annual_data, by = "year") %>%
   mutate(count_frac = (n/wos_wide_count) * 100,
          search = "polyphosphate") %>%
-  select(category, year, count_frac, search)
+  select(category, year, n, count_frac, search)
 
 # pao pubs vs time
 pao_pubs_time_data <- pao_pubs_data %>%
@@ -368,11 +402,18 @@ pao_pubs_time_data <- pao_pubs_data %>%
   left_join(paper_counts_annual_data, by = "year") %>%
   mutate(count_frac = (n/wos_wide_count) * 100,
          search = "PAOs") %>%
-  select(category, year, count_frac, search)
-  
+  select(category, year, n, count_frac, search)
+
 # bind datasets
 all_pubs_time_data <- bind_rows(phos_pubs_time_data, microbio_pubs_time_data, polyp_pubs_time_data, pao_pubs_time_data) %>%
   mutate(search = fct_relevel(as.character(search), "microbiology", "phosphorus", "polyphosphate", "PAOs"))
+
+# idenfity one study in 2010s that addresses PAOs
+pao_ag_data_time = pao_pubs_data %>% filter(category == "agriculture")
+pao_ag_data_time$title # "Deciphering the relationship among phosphate dynamics, electron-dense body and lipid accumulation in the green alga Parachlorella kessleri"
+pao_ag_data_time$year_fix # 2016
+pao_ag_data_time$authors_fix # "ota_shuhei,yoshihara_mai,yamazaki_tomokazu,takeshita_tsuyoshi,hirata_aiko,konomi_mami,oshima_kenshiro,hattori_masahira,bisova_katerina,zachleder_vilem,kawano_shigeyuki"
+pao_ag_data_time$journal_fix # "Scientific Reports"
 
 
 # ---- 5.2 plot paper counts over time -----
@@ -381,6 +422,7 @@ my_search_shapes = c(21, 22, 23, 24)
 # my_category_colors <- c("lightgoldenrod", "darkolivegreen3", "lightskyblue", "darkcyan", "sienna")
 
 # annual wos results overall vs time
+pdf(paste0(figure_export_path, "woswide_paper_counts_vs_time.pdf"), width = 10, height = 10)
 ggplot(data = paper_counts_annual_data) +
   geom_line(aes(x = year, y = wos_wide_count_millions)) +
   geom_point(aes(x = year, y = wos_wide_count_millions), shape = 21, size = 3, alpha = 0.50, color = "black", fill = "black") +
@@ -390,10 +432,11 @@ ggplot(data = paper_counts_annual_data) +
   # scale_color_manual(values = my_category_colors) +
   theme_classic() +
   theme(axis.title.x = element_text(size = 12),
-        axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 12),
+        axis.text.x = element_text(size = 12),
         axis.title.y = element_text(size = 12),
         axis.text.y = element_text(size = 12),
         axis.text = element_text(size = 12))
+dev.off()
 
 # wwt results vs time
 p5 <- ggplot(data = all_pubs_time_data %>% filter(category == "wwt")) +
@@ -407,7 +450,7 @@ p5 <- ggplot(data = all_pubs_time_data %>% filter(category == "wwt")) +
   # scale_color_manual(values = my_category_colors) +
   theme_classic() +
   theme(axis.title.x = element_text(size = 12),
-        axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 12),
+        axis.text.x = element_text(size = 12),
         axis.title.y = element_text(size = 12),
         axis.text.y = element_text(size = 12),
         axis.text = element_text(size = 12),
@@ -425,7 +468,7 @@ p6 <- ggplot(data = all_pubs_time_data %>% filter(category == "agriculture")) +
   # scale_color_manual(values = my_category_colors) +
   theme_classic() +
   theme(axis.title.x = element_text(size = 12),
-        axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 12),
+        axis.text.x = element_text(size = 12),
         axis.title.y = element_text(size = 12),
         axis.text.y = element_text(size = 12),
         axis.text = element_text(size = 12),
@@ -433,7 +476,9 @@ p6 <- ggplot(data = all_pubs_time_data %>% filter(category == "agriculture")) +
 
 # plot together
 # https://cran.r-project.org/web/packages/egg/vignettes/Ecosystem.html
+pdf(paste0(figure_export_path, "wwtandag_paper_counts_vs_time.pdf"), width = 10, height = 5)
 grid.arrange(p5, p6, nrow = 1)
+dev.off()
 
 # terrestrial results vs time
 ggplot(data = all_pubs_time_data %>% filter(category == "terrestrial")) +
@@ -493,6 +538,16 @@ polyp_pubs_journal_data <- polyp_pubs_data %>%
   ungroup() %>%
   # mutate(category = fct_relevel(category, "all", "wwt", "terrestrial", "freshwater", "marine", "agriculture"))
   mutate(category = fct_relevel(category, "wwt", "terrestrial", "freshwater", "marine", "agriculture"))
+
+# polyp pubs in all category per journal (top journal)
+polyp_all_pubs_journal_data <- polyp_pubs_data %>%
+  filter(category == "all") %>%
+  group_by(category, journal_fix) %>%
+  count() %>%
+  ungroup()  %>%
+  group_by(category) %>%
+  mutate(pub_rank = dense_rank(desc(n)))
+# top three are in polymer sciences and biochemistry
 
 # pao pubs per jounal (top journal)
 pao_pubs_journal_data <- pao_pubs_data %>%
@@ -572,7 +627,6 @@ pao_author_pub_count_data <- pao_author_data %>%
   # ungroup()
   
 
-  
 # ---- 8.1 overlapping journal articles ----
 # phosphorus
 phos_set_data <- phos_pubs_data %>%
@@ -600,6 +654,45 @@ polyp_set_data <- polyp_pubs_data %>%
             count = n()) #%>%
   # filter(count > 1)
 
+# polyp in terrestrial
+polyp_terr_only_set_data <- polyp_set_data %>%
+  filter(category == "terrestrial") %>%
+  select(uid) %>%
+  left_join(polyp_pubs_data, by = "uid") %>%
+  select(-environment, -category) %>%
+  distinct()
+# 221
+221/459 # 48.1%
+# export
+write_csv(polyp_terr_only_set_data, paste0(tabular_export_path, "polyp_terr_pubs.csv"))
+
+# polyp in terrestrial and freshwater
+polyp_terr_fresh_set_data <- polyp_set_data %>%
+  filter(count == 2)
+
+# polyp freshwater
+polyp_fresh_set_data <- polyp_set_data %>%
+  filter(category == "freshwater") %>%
+  select(uid) %>%
+  left_join(polyp_pubs_data, by = "uid") %>%
+  select(-environment, -category) %>%
+  distinct()
+# 87
+# export
+write_csv(polyp_fresh_set_data, paste0(tabular_export_path, "polyp_fresh_pubs.csv"))
+
+
+# polyp marine
+polyp_mar_set_data <- polyp_set_data %>%
+  filter(category == "marine")  %>%
+  select(uid) %>%
+  left_join(polyp_pubs_data, by = "uid") %>%
+  select(-environment, -category) %>%
+  distinct()
+128/367
+# export
+write_csv(polyp_mar_set_data, paste0(tabular_export_path, "polyp_mar_pubs.csv"))
+
 # pao
 pao_set_data <- pao_pubs_data %>%
   filter(category != "all") %>%
@@ -608,6 +701,115 @@ pao_set_data <- pao_pubs_data %>%
   summarize(category = str_split(paste(category, collapse = ", "), pattern = ", "), 
             count = n()) #%>%
   # filter(count > 1)
+# pao_set_data_v2 <- pao_pubs_data %>%
+#   filter(category != "all") %>%
+#   select(uid, category) %>%
+#   group_by(uid) 
+
+# pao in terr
+pao_terr_set_data <- pao_pubs_data %>%
+  filter(category == "terrestrial")
+# export
+write_csv(pao_terr_set_data, paste0(tabular_export_path, "pao_terr_pubs.csv"))
+
+
+# pao in wwt
+pao_wwt_only_set_data <- pao_set_data %>%
+  filter(category == "wwt")
+# 601
+
+# pao in wwt and terrestrial
+pao_terr_wwt_set_data <- pao_set_data %>%
+  filter(count == 2) %>%
+  filter(map_lgl(category, ~ all(c("wwt", "terrestrial") %in% .x))) %>%
+  select(uid) %>%
+  left_join(pao_pubs_data, by = "uid") %>%
+  select(-environment, -category) %>%
+  distinct()
+# 7!
+# export
+write_csv(pao_terr_wwt_set_data, paste0(tabular_export_path, "pao_terr_wwt_pubs.csv"))
+
+# pao in wwt and freshwater
+pao_fresh_wwt_set_data <- pao_set_data %>%
+  filter(count == 2) %>%
+  filter(map_lgl(category, ~ all(c("wwt", "freshwater") %in% .x))) %>%
+  select(uid) %>%
+  left_join(pao_pubs_data, by = "uid") %>%
+  select(-environment, -category) %>%
+  distinct()
+# export
+write_csv(pao_fresh_wwt_set_data, paste0(tabular_export_path, "pao_fresh_wwt_pubs.csv"))
+
+# pao in wwt and marine
+pao_mar_wwt_set_data <- pao_set_data %>%
+  filter(count == 2) %>%
+  filter(map_lgl(category, ~ all(c("wwt", "marine") %in% .x))) %>%
+  select(uid) %>%
+  left_join(pao_pubs_data, by = "uid") %>%
+  select(-environment, -category) %>%
+  distinct()
+# 6!
+# export
+write_csv(pao_mar_wwt_set_data, paste0(tabular_export_path, "pao_mar_wwt_pubs.csv"))
+
+# polyp and pao overlaps by category
+# terrestrial
+terr_polyp_pao_pubs_data <- polyp_pubs_data %>%
+  filter(category == "terrestrial") %>%
+  select(uid) %>%
+  right_join(pao_pubs_data, by = "uid") %>%
+  filter(category == "terrestrial") %>%
+  select(-environment) %>%
+  distinct()
+length(unique(terr_polyp_pao_pubs_data$uid)) #26
+# export
+write_csv(terr_polyp_pao_pubs_data, paste0(tabular_export_path, "terr_polyp_pao_pubs.csv"))
+
+# polyp and pao overlaps by category
+# freshwater
+fresh_polyp_pao_pubs_data <- polyp_pubs_data %>%
+  filter(category == "freshwater") %>%
+  select(uid) %>%
+  right_join(pao_pubs_data, by = "uid") %>%
+  filter(category == "freshwater") %>%
+  select(-environment) %>%
+  distinct()
+length(unique(fresh_polyp_pao_pubs_data$uid)) #45
+# export
+write_csv(fresh_polyp_pao_pubs_data, paste0(tabular_export_path, "fresh_polyp_pao_pubs.csv"))
+
+# polyp and pao overlaps by category
+# marine
+mar_polyp_pao_pubs_data <- polyp_pubs_data %>%
+  filter(category == "marine") %>%
+  select(uid) %>%
+  right_join(pao_pubs_data, by = "uid") %>%
+  filter(category == "marine") %>%
+  select(-environment) %>%
+  distinct()
+length(unique(mar_polyp_pao_pubs_data$uid)) #14
+# export
+write_csv(mar_polyp_pao_pubs_data, paste0(tabular_export_path, "mar_polyp_pao_pubs.csv"))
+
+
+
+# keep_col <- sum(unlist(pao_terr_wwt_set_data$category) %in% c("wwt", "terrestrial"))
+# pao_terr_wwt_set_data <- pao_set_data_v2 %>%
+#   filter(category == "wwt" | category == "terrestrial")
+# filter(count == 2)
+# keep_list <- unlist(pao_terr_wwt_set_data$category) %in% c("wwt", "terrestrial")
+# pao_terr_wwt_set_data$keep_list <- keep_list
+
+# pao and polyp in terrestrial, freshwater, and marine
+polyp_envir_pubs_data <- polyp_pubs_data %>%
+  filter(category == "terrestrial" | category == "marine" | category == "freshwater")
+pao_envir_pubs_data <- pao_pubs_data %>%
+  filter(category == "terrestrial" | category == "marine" | category == "freshwater") %>%
+  select(uid)
+polyp_pao_envir_join_pubs_data <- polyp_envir_pubs_data %>%
+  right_join(pao_envir_pubs_data, by = "uid")
+length(unique(polyp_pao_envir_join_pubs_data$uid)) # 69 papers in common
 
 # plot
 p7 <- ggplot(data = phos_set_data, aes(x = category)) +
@@ -649,7 +851,11 @@ p10 <- ggplot(data = pao_set_data, aes(x = category)) +
 
 # plot together
 # https://cran.r-project.org/web/packages/egg/vignettes/Ecosystem.html
+pdf(paste0(figure_export_path, "overlapping_papers.pdf"), width = 15, height = 10)
 grid.arrange(p7, p8, p9, p10, ncol = 2, nrow = 2)
+dev.off()
+
+
 
 
 
@@ -775,9 +981,6 @@ write_csv(pao_dendo_data, paste0("pao_dendogram_data.csv"))
 
 # ---- TO DO LIST ----
 
-# TODO redo wwt search for "enhanced biological phosphorus removal" and "batch reactor"
-# TODO look up wos pubs per year from 1990 to 2019 to normalize time series data (Ryan and Todd's ideas)
-# TODO Theo asked if spikes were from funding cycle (3-years)?
 
 
 # ---- X.1 calculate paper count fraction ----
