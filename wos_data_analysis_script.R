@@ -179,18 +179,6 @@ paper_counts_data_frac_envir <- paper_counts_data %>%
   mutate(count_perc = round(count/total_collect * 100, digits = 1),
          count_perc_text = paste0(count_perc, "%"))
 
-# ---- 4.x detailed look at specific articles ----
-# polyp articles in the ag category
-polyp_ag_pubs_data <- polyp_pubs_data %>% 
-  filter(category == "agriculture")
-
-# export polyp ag table
-write_csv(polyp_ag_pubs_data, paste0(tabular_export_path, "polyp_ag_pubs.csv"))
-
-# pao articles in the ag category
-pao_ag_pubs_data <- pao_pubs_data %>% 
-  filter(category == "agriculture")
-
 
 # ---- 4.2 plot overall pub counts (broad categories) ----
 # define colors
@@ -625,9 +613,22 @@ pao_author_pub_count_data <- pao_author_data %>%
   mutate(author_rank = dense_rank(desc(n))) # %>%
   # filter(author_rank <= 1) %>%
   # ungroup()
-  
 
-# ---- 8.1 overlapping journal articles ----
+
+# ---- 8.x looking at general categories of articles ----
+
+# all polyp articles in the ag category
+polyp_ag_pubs_data <- polyp_pubs_data %>% 
+  filter(category == "agriculture")
+# export polyp ag table
+write_csv(polyp_ag_pubs_data, paste0(tabular_export_path, "polyp_all_ag_pubs.csv"))
+
+# pao articles in the ag category
+pao_ag_pubs_data <- pao_pubs_data %>% 
+  filter(category == "agriculture")
+# ota et al. 2016
+
+# ---- 8.1 calculate overlapping journal articles ----
 # phosphorus
 phos_set_data <- phos_pubs_data %>%
   select(uid, category) %>%
@@ -653,8 +654,24 @@ polyp_set_data <- polyp_pubs_data %>%
   summarize(category = str_split(paste(category, collapse = ", "), pattern = ", "), 
             count = n()) #%>%
   # filter(count > 1)
+# ag/terr/fresh WOS:000388580200045 Characteristics of phosphorus components in the sediments of main rivers into the Bohai Sea	(Shan et al. 2016)
+# ag/terr (6) 
+# ag/terr/wwt WOS:000366994200001 Phosphorus Recycling from an Unexplored Source by Polyphosphate Accumulating Microalgae and Cyanobacteria-A Step to Phosphorus Security in Agriculture (Mukherjee 2015)
+# ag/wwt WOS:000375899200001 Deciphering the relationship among phosphate dynamics, electron-dense body and lipid accumulation in the green alga Parachlorella kessleri	(Ota et al. 2016)
+# wwt/terr/fresh/marine WOS:000364520100010 Screening of Phosphorus-Accumulating Fungi and Their Potential for Phosphorus Removal from Waste Streams 
 
-# polyp in terrestrial
+# polyp in ag and terrestrial
+polyp_ag_terr_set_data <- polyp_set_data %>%
+  filter(count == 2) %>%
+  filter(map_lgl(category, ~ all(c("agriculture", "terrestrial") %in% .x))) %>%
+  select(uid) %>%
+  left_join(polyp_pubs_data, by = "uid") %>%
+  select(-environment, -category) %>%
+  distinct()
+# export
+write_csv(polyp_ag_terr_set_data, paste0(tabular_export_path, "polyp_ag_terr_only_pubs.csv"))
+
+# polyp in terrestrial only
 polyp_terr_only_set_data <- polyp_set_data %>%
   filter(category == "terrestrial") %>%
   select(uid) %>%
@@ -664,13 +681,13 @@ polyp_terr_only_set_data <- polyp_set_data %>%
 # 221
 221/459 # 48.1%
 # export
-write_csv(polyp_terr_only_set_data, paste0(tabular_export_path, "polyp_terr_pubs.csv"))
+write_csv(polyp_terr_only_set_data, paste0(tabular_export_path, "polyp_terr_only_pubs.csv"))
 
-# polyp in terrestrial and freshwater
+# polyp in terrestrial and freshwater only
 polyp_terr_fresh_set_data <- polyp_set_data %>%
   filter(count == 2)
 
-# polyp freshwater
+# polyp freshwater only
 polyp_fresh_set_data <- polyp_set_data %>%
   filter(category == "freshwater") %>%
   select(uid) %>%
@@ -679,10 +696,9 @@ polyp_fresh_set_data <- polyp_set_data %>%
   distinct()
 # 87
 # export
-write_csv(polyp_fresh_set_data, paste0(tabular_export_path, "polyp_fresh_pubs.csv"))
+write_csv(polyp_fresh_set_data, paste0(tabular_export_path, "polyp_fresh_only_pubs.csv"))
 
-
-# polyp marine
+# polyp marine only
 polyp_mar_set_data <- polyp_set_data %>%
   filter(category == "marine")  %>%
   select(uid) %>%
@@ -691,7 +707,20 @@ polyp_mar_set_data <- polyp_set_data %>%
   distinct()
 128/367
 # export
-write_csv(polyp_mar_set_data, paste0(tabular_export_path, "polyp_mar_pubs.csv"))
+write_csv(polyp_mar_set_data, paste0(tabular_export_path, "polyp_mar_only_pubs.csv"))
+
+# polyp wwt only
+polyp_wwt_set_data <- polyp_set_data %>%
+  filter(category == "wwt")  %>%
+  select(uid) %>%
+  left_join(polyp_pubs_data, by = "uid") %>%
+  select(-environment, -category) %>%
+  distinct()
+# 838
+# export
+write_csv(polyp_wwt_set_data, paste0(tabular_export_path, "polyp_wwt_only_pubs.csv"))
+
+
 
 # pao
 pao_set_data <- pao_pubs_data %>%
@@ -705,20 +734,27 @@ pao_set_data <- pao_pubs_data %>%
 #   filter(category != "all") %>%
 #   select(uid, category) %>%
 #   group_by(uid) 
+# ag/wwt WOS:000375899200001 Deciphering the relationship among phosphate dynamics, electron-dense body and lipid accumulation in the green alga Parachlorella kessleri	(Ota et al. 2016)
+# wwt/terr/fresh/marine WOS:000287589700005 Biological removal of phosphate from synthetic wastewater using bacterial consortium (Krishnaswamy et al. 2011)
 
-# pao in terr
+# pao in terr only
 pao_terr_set_data <- pao_pubs_data %>%
   filter(category == "terrestrial")
 # export
-write_csv(pao_terr_set_data, paste0(tabular_export_path, "pao_terr_pubs.csv"))
+write_csv(pao_terr_set_data, paste0(tabular_export_path, "pao_terr_only_pubs.csv"))
 
-
-# pao in wwt
-pao_wwt_only_set_data <- pao_set_data %>%
-  filter(category == "wwt")
+# polyp wwt only
+pao_wwt_set_data <- pao_set_data %>%
+  filter(category == "wwt")  %>%
+  select(uid) %>%
+  left_join(pao_pubs_data, by = "uid") %>%
+  select(-environment, -category) %>%
+  distinct()
 # 601
+# export
+write_csv(pao_wwt_set_data, paste0(tabular_export_path, "pao_wwt_only_pubs.csv"))
 
-# pao in wwt and terrestrial
+# pao in wwt and terrestrial only
 pao_terr_wwt_set_data <- pao_set_data %>%
   filter(count == 2) %>%
   filter(map_lgl(category, ~ all(c("wwt", "terrestrial") %in% .x))) %>%
@@ -728,9 +764,9 @@ pao_terr_wwt_set_data <- pao_set_data %>%
   distinct()
 # 7!
 # export
-write_csv(pao_terr_wwt_set_data, paste0(tabular_export_path, "pao_terr_wwt_pubs.csv"))
+write_csv(pao_terr_wwt_set_data, paste0(tabular_export_path, "pao_terr_wwt_only_pubs.csv"))
 
-# pao in wwt and freshwater
+# pao in wwt and freshwater only
 pao_fresh_wwt_set_data <- pao_set_data %>%
   filter(count == 2) %>%
   filter(map_lgl(category, ~ all(c("wwt", "freshwater") %in% .x))) %>%
@@ -739,9 +775,9 @@ pao_fresh_wwt_set_data <- pao_set_data %>%
   select(-environment, -category) %>%
   distinct()
 # export
-write_csv(pao_fresh_wwt_set_data, paste0(tabular_export_path, "pao_fresh_wwt_pubs.csv"))
+write_csv(pao_fresh_wwt_set_data, paste0(tabular_export_path, "pao_fresh_wwt_only_pubs.csv"))
 
-# pao in wwt and marine
+# pao in wwt and marine only
 pao_mar_wwt_set_data <- pao_set_data %>%
   filter(count == 2) %>%
   filter(map_lgl(category, ~ all(c("wwt", "marine") %in% .x))) %>%
@@ -751,7 +787,7 @@ pao_mar_wwt_set_data <- pao_set_data %>%
   distinct()
 # 6!
 # export
-write_csv(pao_mar_wwt_set_data, paste0(tabular_export_path, "pao_mar_wwt_pubs.csv"))
+write_csv(pao_mar_wwt_set_data, paste0(tabular_export_path, "pao_mar_wwt_only_pubs.csv"))
 
 # polyp and pao overlaps by category
 # terrestrial
