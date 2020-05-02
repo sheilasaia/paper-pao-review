@@ -660,6 +660,9 @@ polyp_set_data <- polyp_pubs_data %>%
 # ag/wwt WOS:000375899200001 Deciphering the relationship among phosphate dynamics, electron-dense body and lipid accumulation in the green alga Parachlorella kessleri	(Ota et al. 2016)
 # wwt/terr/fresh/marine WOS:000364520100010 Screening of Phosphorus-Accumulating Fungi and Their Potential for Phosphorus Removal from Waste Streams 
 
+# 98 if i select "terrestrial" and > 1
+
+
 # polyp in ag and terrestrial
 polyp_ag_terr_set_data <- polyp_set_data %>%
   filter(count == 2) %>%
