@@ -636,6 +636,8 @@ phos_set_data <- phos_pubs_data %>%
   summarize(category = str_split(paste(unique(category), collapse = ", "), pattern = ", "), 
             count = n()) #%>%
   # filter(count > 1)
+
+# 30,817 if i select "terrestrial" and = 1
   
 # microbio
 microbio_set_data <- microbio_pubs_data %>%
@@ -708,7 +710,7 @@ polyp_mar_set_data <- polyp_set_data %>%
   left_join(polyp_pubs_data, by = "uid") %>%
   select(-environment, -category) %>%
   distinct()
-128/367
+# 128/367 = 48.1%
 # export
 write_csv(polyp_mar_set_data, paste0(tabular_export_path, "polyp_mar_only_pubs.csv"))
 
@@ -740,11 +742,15 @@ pao_set_data <- pao_pubs_data %>%
 # ag/wwt WOS:000375899200001 Deciphering the relationship among phosphate dynamics, electron-dense body and lipid accumulation in the green alga Parachlorella kessleri	(Ota et al. 2016)
 # wwt/terr/fresh/marine WOS:000287589700005 Biological removal of phosphate from synthetic wastewater using bacterial consortium (Krishnaswamy et al. 2011)
 
+# 21 if i select "terrestrial" and > 1
+
+
 # pao in terr only
 pao_terr_set_data <- pao_pubs_data %>%
   filter(category == "terrestrial")
 # export
 write_csv(pao_terr_set_data, paste0(tabular_export_path, "pao_terr_only_pubs.csv"))
+# 29 articles (29/671 = 4.3%)
 
 # polyp wwt only
 pao_wwt_set_data <- pao_set_data %>%
