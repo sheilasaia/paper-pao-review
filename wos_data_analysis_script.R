@@ -67,7 +67,7 @@ paper_counts_annual_data <- paper_counts_annual_data_raw %>%
 # wrangle phosphorus data
 phos_pubs_data <- phos_pubs_data_raw %>%
   mutate(year_fix = as.numeric(year),
-         journal_fix = str_replace_all(str_to_title(journal), c(" Of " = " of ", " The " = " the ", "And" = "and", "&" = "and", " In " = " in ", " Et " = " et ")),
+         journal_fix = str_replace_all(str_to_title(journal), c(" Of " = " of ", " The " = " the ", "And" = "and", "&" = "and", " In " = " in ", " Et " = " et ", " For " = " for ")),
          keywords_fix = str_to_lower(str_replace_all(keywords, " \\|\\ ", ",")),
          authors_fix = str_to_lower(str_replace_all(str_replace_all(str_replace_all(str_replace_all(authors, ", ", "_"), " \\|\\ ", ","), " ", "_"), "\\.", "")),
          journal_short = if_else(str_count(journal_fix, " ") >= 3, paste0(word(journal_fix, start = 1, end = 3), "..."), journal_fix)) %>%
@@ -350,8 +350,9 @@ phos_pubs_time_data <- phos_pubs_data %>%
   mutate(year = year_fix) %>%
   left_join(paper_counts_annual_data, by = "year") %>%
   mutate(count_frac = (n/wos_wide_count) * 100,
+         count_frac_log = log10(count_frac),
          search = "phosphorus") %>%
-  select(category, year, n, count_frac, search)
+  select(category, year, n, count_frac, count_frac_log, search)
 
 # microbio pubs vs time
 microbio_pubs_time_data <- microbio_pubs_data %>%
@@ -363,8 +364,9 @@ microbio_pubs_time_data <- microbio_pubs_data %>%
   mutate(year = year_fix) %>%
   left_join(paper_counts_annual_data, by = "year") %>%
   mutate(count_frac = (n/wos_wide_count) * 100,
+         count_frac_log = log10(count_frac),
          search = "microbiology") %>%
-  select(category, year, n, count_frac, search)
+  select(category, year, n, count_frac, count_frac_log, search)
 
 # polyp pubs vs time
 polyp_pubs_time_data <- polyp_pubs_data %>%
@@ -376,8 +378,9 @@ polyp_pubs_time_data <- polyp_pubs_data %>%
   mutate(year = year_fix) %>%
   left_join(paper_counts_annual_data, by = "year") %>%
   mutate(count_frac = (n/wos_wide_count) * 100,
+         count_frac_log = log10(count_frac),
          search = "polyphosphate") %>%
-  select(category, year, n, count_frac, search)
+  select(category, year, n, count_frac, count_frac_log, search)
 
 # pao pubs vs time
 pao_pubs_time_data <- pao_pubs_data %>%
@@ -389,8 +392,9 @@ pao_pubs_time_data <- pao_pubs_data %>%
   mutate(year = year_fix) %>%
   left_join(paper_counts_annual_data, by = "year") %>%
   mutate(count_frac = (n/wos_wide_count) * 100,
+         count_frac_log = log10(count_frac),
          search = "PAOs") %>%
-  select(category, year, n, count_frac, search)
+  select(category, year, n, count_frac, count_frac_log, search)
 
 # bind datasets
 all_pubs_time_data <- bind_rows(phos_pubs_time_data, microbio_pubs_time_data, polyp_pubs_time_data, pao_pubs_time_data) %>%
@@ -468,6 +472,48 @@ pdf(paste0(figure_export_path, "wwtandag_paper_counts_vs_time.pdf"), width = 10,
 grid.arrange(p5, p6, nrow = 1)
 dev.off()
 
+# wwt results vs time (logged - base10)
+p5_log <- ggplot(data = all_pubs_time_data %>% filter(category == "wwt")) +
+  geom_line(aes(x = year, y = count_frac_log, linetype = search)) +
+  geom_point(aes(x = year, y = count_frac_log, shape = search), size = 3, alpha = 0.80, fill = "lightgoldenrod", color = "black") +
+  annotate("text", x = 1990, y = 0, label = "(A) 'wwt'", size = 4, hjust = 0) +
+  ylim(-5, 0) +
+  xlab("Year") +
+  ylab("Percent of WOS Articles Returned from 1990-2019 (log10(%))") +
+  scale_shape_manual(values = my_search_shapes) +
+  # scale_color_manual(values = my_category_colors) +
+  theme_classic() +
+  theme(axis.title.x = element_text(size = 12),
+        axis.text.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        axis.text = element_text(size = 12),
+        legend.position = "none")
+
+# ag results vs time
+p6_log <- ggplot(data = all_pubs_time_data %>% filter(category == "agriculture")) +
+  geom_line(aes(x = year, y = count_frac_log, linetype = search)) +
+  geom_point(aes(x = year, y = count_frac_log, shape = search), size = 3, alpha = 0.80, fill = "sienna", color = "black") +
+  annotate("text", x = 1990, y = 0, label = "(B) 'agriculture'", size = 4, hjust = 0) +
+  ylim(-5, 0) +
+  xlab("Year") +
+  ylab("") +
+  scale_shape_manual(values = my_search_shapes) +
+  # scale_color_manual(values = my_category_colors) +
+  theme_classic() +
+  theme(axis.title.x = element_text(size = 12),
+        axis.text.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        axis.text = element_text(size = 12),
+        legend.position = "none")
+
+# plot together
+# https://cran.r-project.org/web/packages/egg/vignettes/Ecosystem.html
+pdf(paste0(figure_export_path, "wwtandag_paper_counts_vs_time_log.pdf"), width = 11, height = 5.5)
+grid.arrange(p5_log, p6_log, nrow = 1)
+dev.off()
+
 # terrestrial results vs time
 ggplot(data = all_pubs_time_data %>% filter(category == "terrestrial")) +
   geom_line(aes(x = year, y = count_frac, linetype = search)) +
@@ -536,6 +582,34 @@ polyp_all_pubs_journal_data <- polyp_pubs_data %>%
   group_by(category) %>%
   mutate(pub_rank = dense_rank(desc(n)))
 # top three are in polymer sciences and biochemistry
+
+# find top journals of polyp papers that are outside the five categories (for table SX)
+polyp_outside_pubs_lookup <- polyp_pubs_data %>%
+  select(uid) %>%
+  group_by(uid) %>%
+  count() %>%
+  filter(n == 1) %>% # if n = 1 then these should only show up in all category
+  select(uid)
+
+# use lookup to get outside pubs
+polyp_outside_pubs <- polyp_pubs_data %>%
+  right_join(polyp_outside_pubs_lookup, by = "uid")
+# check only category should be "all"
+unique(polyp_outside_pubs$category) # check
+
+# get top 20 polyp pub journals for categories not represented in the study
+polyp_outside_top20_pubs <- polyp_outside_pubs %>%
+  group_by(category, journal_fix) %>%
+  count() %>%
+  ungroup()  %>%
+  group_by(category) %>%
+  mutate(pub_rank = dense_rank(desc(n))) %>%
+  filter(pub_rank <= 20) %>%
+  ungroup() %>%
+  select(pub_rank, journal_fix, n)
+
+# export for making table SX
+write_csv(polyp_outside_top20_pubs, paste0(tabular_export_path, "polyp_outside_top20_pubs.csv"))
 
 # pao pubs per jounal (top journal)
 pao_pubs_journal_data <- pao_pubs_data %>%
