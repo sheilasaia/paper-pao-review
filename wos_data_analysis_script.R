@@ -476,10 +476,10 @@ dev.off()
 p5_log <- ggplot(data = all_pubs_time_data %>% filter(category == "wwt")) +
   geom_line(aes(x = year, y = count_frac_log, linetype = search)) +
   geom_point(aes(x = year, y = count_frac_log, shape = search), size = 3, alpha = 0.80, fill = "lightgoldenrod", color = "black") +
-  annotate("text", x = 1990, y = 0, label = "(A) 'wwt'", size = 4, hjust = 0) +
+  annotate("text", x = 1990, y = 0, label = "(C) 'wwt' logged", size = 4, hjust = 0) +
   ylim(-5, 0) +
   xlab("Year") +
-  ylab("Percent of WOS Articles Returned from 1990-2019 (log10(%))") +
+  ylab("Log10 Percent of WOS Articles Returned from 1990-2019 (log10(%))") +
   scale_shape_manual(values = my_search_shapes) +
   # scale_color_manual(values = my_category_colors) +
   theme_classic() +
@@ -494,7 +494,7 @@ p5_log <- ggplot(data = all_pubs_time_data %>% filter(category == "wwt")) +
 p6_log <- ggplot(data = all_pubs_time_data %>% filter(category == "agriculture")) +
   geom_line(aes(x = year, y = count_frac_log, linetype = search)) +
   geom_point(aes(x = year, y = count_frac_log, shape = search), size = 3, alpha = 0.80, fill = "sienna", color = "black") +
-  annotate("text", x = 1990, y = 0, label = "(B) 'agriculture'", size = 4, hjust = 0) +
+  annotate("text", x = 1990, y = 0, label = "(D) 'agriculture' logged", size = 4, hjust = 0) +
   ylim(-5, 0) +
   xlab("Year") +
   ylab("") +
@@ -512,6 +512,12 @@ p6_log <- ggplot(data = all_pubs_time_data %>% filter(category == "agriculture")
 # https://cran.r-project.org/web/packages/egg/vignettes/Ecosystem.html
 pdf(paste0(figure_export_path, "wwtandag_paper_counts_vs_time_log.pdf"), width = 11, height = 5.5)
 grid.arrange(p5_log, p6_log, nrow = 1)
+dev.off()
+
+# plot together (un-logged and logged)
+# https://cran.r-project.org/web/packages/egg/vignettes/Ecosystem.html
+pdf(paste0(figure_export_path, "wwtandag_paper_counts_vs_time_log2.pdf"), width = 10, height = 10)
+grid.arrange(p5, p6, p5_log, p6_log, nrow = 2)
 dev.off()
 
 # terrestrial results vs time
@@ -738,6 +744,26 @@ polyp_set_data <- polyp_pubs_data %>%
 
 # 98 if i select "terrestrial" and > 1
 
+# pao
+pao_set_data <- pao_pubs_data %>%
+  filter(category != "all") %>%
+  select(uid, category) %>%
+  group_by(uid) %>%
+  summarize(category = str_split(paste(category, collapse = ", "), pattern = ", "), 
+            count = n()) %>%
+  distinct()
+# filter(count > 1)
+# pao_set_data_v2 <- pao_pubs_data %>%
+#   filter(category != "all") %>%
+#   select(uid, category) %>%
+#   group_by(uid) 
+# ag/wwt WOS:000375899200001 Deciphering the relationship among phosphate dynamics, electron-dense body and lipid accumulation in the green alga Parachlorella kessleri	(Ota et al. 2016)
+# wwt/terr/fresh/marine WOS:000287589700005 Biological removal of phosphate from synthetic wastewater using bacterial consortium (Krishnaswamy et al. 2011)
+
+# 21 if i select "terrestrial" and > 1
+
+
+
 
 # polyp in ag and terrestrial
 polyp_ag_terr_set_data <- polyp_set_data %>%
@@ -784,7 +810,7 @@ polyp_mar_set_data <- polyp_set_data %>%
   left_join(polyp_pubs_data, by = "uid") %>%
   select(-environment, -category) %>%
   distinct()
-# 128/367 = 48.1%
+128/367 # = 34.9%
 # export
 write_csv(polyp_mar_set_data, paste0(tabular_export_path, "polyp_mar_only_pubs.csv"))
 
@@ -801,32 +827,20 @@ write_csv(polyp_wwt_set_data, paste0(tabular_export_path, "polyp_wwt_only_pubs.c
 
 
 
-# pao
-pao_set_data <- pao_pubs_data %>%
-  filter(category != "all") %>%
-  select(uid, category) %>%
-  group_by(uid) %>%
-  summarize(category = str_split(paste(category, collapse = ", "), pattern = ", "), 
-            count = n()) #%>%
-  # filter(count > 1)
-# pao_set_data_v2 <- pao_pubs_data %>%
-#   filter(category != "all") %>%
-#   select(uid, category) %>%
-#   group_by(uid) 
-# ag/wwt WOS:000375899200001 Deciphering the relationship among phosphate dynamics, electron-dense body and lipid accumulation in the green alga Parachlorella kessleri	(Ota et al. 2016)
-# wwt/terr/fresh/marine WOS:000287589700005 Biological removal of phosphate from synthetic wastewater using bacterial consortium (Krishnaswamy et al. 2011)
-
-# 21 if i select "terrestrial" and > 1
 
 
 # pao in terr only
 pao_terr_set_data <- pao_pubs_data %>%
-  filter(category == "terrestrial")
+  filter(category == "terrestrial") %>%
+  select(-environment, -category) %>%
+  distinct()
+# 26 articles
+26/671 #= 3.9%
 # export
 write_csv(pao_terr_set_data, paste0(tabular_export_path, "pao_terr_only_pubs.csv"))
-# 29 articles (29/671 = 4.3%)
 
-# polyp wwt only
+
+# pao wwt only
 pao_wwt_set_data <- pao_set_data %>%
   filter(category == "wwt")  %>%
   select(uid) %>%
@@ -848,6 +862,17 @@ pao_terr_wwt_set_data <- pao_set_data %>%
 # 7!
 # export
 write_csv(pao_terr_wwt_set_data, paste0(tabular_export_path, "pao_terr_wwt_only_pubs.csv"))
+
+# pao in freshwater only
+pao_fresh_set_data <- pao_set_data %>%
+  filter(category == "freshwater")  %>%
+  select(uid) %>%
+  left_join(pao_pubs_data, by = "uid") %>%
+  select(-environment, -category) %>%
+  distinct()
+# 2
+# export
+write_csv(pao_fresh_set_data, paste0(tabular_export_path, "pao_fresh_only_pubs.csv"))
 
 # pao in wwt and freshwater only
 pao_fresh_wwt_set_data <- pao_set_data %>%
