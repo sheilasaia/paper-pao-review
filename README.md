@@ -35,13 +35,15 @@ There is no geographic boundary for data included here.
 
 **Information about funding sources that supported the collection of the data**<br>
 
-Sheila Saia was supported by [US EPA](https://www.epa.gov/) STAR Fellowship and [USDA NIFA](https://nifa.usda.gov/) grant (#2014-67019-21636).
+Sheila Saia was supported by a [US EPA](https://www.epa.gov/) STAR Fellowship and a [USDA NIFA](https://nifa.usda.gov/) grant (#2014-67019-21636).
 
 ## Sharing & Access Information ##
 
 **Licenses/restrictions placed on the data**<br>
 
-Please cite this work (see recommended citation below and in the [CITATION.md file](https://github.com/sheilasaia/paper-pao-review/blob/master/CITATION.md) in this repository) and use/distribute according to the CC-BY v4.0 license. For a human readable version of this license visit https://creativecommons.org/licenses/by/4.0/. For a full view of the license visit the [LICENSE.md](https://github.com/sheilasaia/paper-pao-review/blob/master/LICENSE.md) file in this repository.
+Please cite this work (see recommended citation below and in the [CITATION.md file](https://github.com/sheilasaia/paper-pao-review/blob/master/CITATION.md) in this repository) and use/distribute according to the CC-BY v4.0 license.
+
+For a full view of the license visit the [LICENSE.md](https://github.com/sheilasaia/paper-pao-review/blob/master/LICENSE.md) file in this repository. For a human readable version of this license visit https://creativecommons.org/licenses/by/4.0/.
 
 **Links to publications that cite or use the data**<br>
 
