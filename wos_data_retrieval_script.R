@@ -41,7 +41,7 @@ raw_data_path <- here("data", "raw_data")
 sid <- wos_authenticate()
 
 
-# ---- 4. "phosphate" search ----
+# ---- 3. "phosphate" search ----
 # as of 2020-03-10 at 11am ET
 
 # search for articles
@@ -111,7 +111,7 @@ phos_all_searches_pubs_raw <- bind_rows(phos_wwt_pubs_raw,
 write_csv(x = phos_all_searches_pubs_raw, path = paste0(raw_data_path, "phos_all_searches_pubs_raw.csv"))
 
 
-# ---- 5. "microbiology" search ----
+# ---- 4. "microbiology" search ----
 # as of 2020-03-10 at 11am ET
 
 # search for articles
@@ -170,7 +170,7 @@ microbio_all_searches_pubs_raw <- bind_rows(microbio_pubs_raw, microbio_wwt_pubs
 write_csv(x = microbio_all_searches_pubs_raw, path = paste0(raw_data_path, "microbio_all_searches_pubs_raw.csv"))
 
 
-# ---- 6. "polyphosphate" search ----
+# ---- 5. "polyphosphate" search ----
 # as of 2020-03-10 at 11am ET
 
 # search for articles
@@ -229,7 +229,7 @@ polyp_all_searches_pubs_raw <- bind_rows(polyp_pubs_raw, polyp_wwt_pubs_raw,
 write_csv(x = polyp_all_searches_pubs_raw, path = paste0(raw_data_path, "polyp_all_searches_pubs_raw.csv"))
 
 
-# ---- 7. "polyphosphate accumulating organisms" search ----
+# ---- 6. "polyphosphate accumulating organisms" search ----
 # as of 2020-03-10 at 11am ET
 
 # search for articles
@@ -288,7 +288,7 @@ pao_all_searches_pubs_raw <- bind_rows(pao_pubs_raw, pao_wwt_pubs_raw,
 write_csv(x = pao_all_searches_pubs_raw, path = paste0(raw_data_path, "pao_all_searches_pubs_raw.csv"))
 
 
-# ---- 8. overall search of web of science by year ----
+# ---- 7. overall search of web of science by year ----
 # make data frame to hold search counts
 my_annual_search <- data.frame(year = seq(1990, 2019),
                                count = rep(NA, 30))
