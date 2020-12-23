@@ -7,7 +7,7 @@ This work is licensed under a
 [cc-by-image]: https://i.creativecommons.org/l/by/4.0/88x31.png
 
 
-# ShellCast Attribution
+# Paper, Data, and Code Attribution
 
 See [CITATION.md](https://github.com/sheilasaia/paper-pao-review/blob/master/CITATION.md) for details on how to provide attribution.
 
