@@ -1,9 +1,8 @@
-
 # ---- script header ----
 # script name: wos_data_analysis_script.R
 # purpose of script: web of science data analysis
 # author: sheila saia
-# date created: 20200207
+# date created: 2020-02-07
 # email: ssaia@ncsu.edu
 
 
@@ -22,17 +21,14 @@
 library(tidyverse)
 library(here)
 library(ggforce)
-# library(gtable)
 library(gridExtra)
 library(ggupset)
 
 # define paths
-# tabular_raw_data_path <- here("data")
-# figure_export_path <- here() # finish this
-# tabular_export_path <- here() # finish this
-tabular_raw_data_path <- "/Users/sheila/Documents/phd/pao_lit_review/pao-review-analysis/raw_data/"
-figure_export_path <- "/Users/sheila/Documents/phd/pao_lit_review/pao-review-analysis/results/figures/"
-tabular_export_path <- "/Users/sheila/Documents/phd/pao_lit_review/pao-review-analysis/results/tabular/"
+tabular_raw_data_path <- here("data", "raw_data")
+tabular_export_path <- here("data")
+figure_export_path <- here("figures")
+
 
 # ---- 2. load data ----
 # overall paper counts data (by topic)
@@ -71,11 +67,7 @@ phos_pubs_data <- phos_pubs_data_raw %>%
          keywords_fix = str_to_lower(str_replace_all(keywords, " \\|\\ ", ",")),
          authors_fix = str_to_lower(str_replace_all(str_replace_all(str_replace_all(str_replace_all(authors, ", ", "_"), " \\|\\ ", ","), " ", "_"), "\\.", "")),
          journal_short = if_else(str_count(journal_fix, " ") >= 3, paste0(word(journal_fix, start = 1, end = 3), "..."), journal_fix)) %>%
-  select(uid, title, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category) # %>%
-  #   mutate(category = fct_relevel(category, "all", "wwt", "terrestrial", "freshwater", "marine", "agriculture"),
-  #          environment = fct_relevel(environment, "all", "wwt", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
-  # mutate(category = fct_relevel(category, "wwt", "terrestrial", "freshwater", "marine", "agriculture"),
-  #        environment = fct_relevel(environment, "wwt", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture")) # there's no "all" category yet...
+  select(uid, title, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category)
 # exclude "all" category for now (since can't get more than 100K entries from wos)
 
 # wrangle microbio data
@@ -85,12 +77,7 @@ microbio_pubs_data <- microbio_pubs_data_raw %>%
          keywords_fix = str_to_lower(str_replace_all(keywords, " \\|\\ ", ",")),
          authors_fix = str_to_lower(str_replace_all(str_replace_all(str_replace_all(str_replace_all(authors, ", ", "_"), " \\|\\ ", ","), " ", "_"), "\\.", "")),
          journal_short = if_else(str_count(journal_fix, " ") >= 3, paste0(word(journal_fix, start = 1, end = 3), "..."), journal_fix)) %>%
-  select(uid, title, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category) # %>%
-  #   mutate(category = fct_relevel(category, "all", "wwt", "terrestrial", "freshwater", "marine", "agriculture"),
-  #          environment = fct_relevel(environment, "all", "wwt", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
-  # filter(category != "all") %>% # exclude "all" category for now (since can't get more than 100K entries from wos)
-  # mutate(category = fct_relevel(category, "wwt", "terrestrial", "freshwater", "marine", "agriculture"),
-  #        environment = fct_relevel(environment, "wwt", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
+  select(uid, title, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category)
 
 # wrangle polyp data
 polyp_pubs_data <- polyp_pubs_data_raw %>%
@@ -98,12 +85,7 @@ polyp_pubs_data <- polyp_pubs_data_raw %>%
          journal_fix = str_replace_all(str_to_title(journal), c(" Of " = " of ", " The " = " the ", "And" = "and", "&" = "and", " In " = " in ", " Et " = " et ")),         keywords_fix = str_to_lower(str_replace_all(keywords, " \\|\\ ", ",")),
          authors_fix = str_to_lower(str_replace_all(str_replace_all(str_replace_all(str_replace_all(authors, ", ", "_"), " \\|\\ ", ","), " ", "_"), "\\.", "")),
          journal_short = if_else(str_count(journal_fix, " ") >= 3, paste0(word(journal_fix, start = 1, end = 3), "..."), journal_fix)) %>%
-  select(uid, title, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category) # %>%
-  #   mutate(category = fct_relevel(category, "all", "wwt", "terrestrial", "freshwater", "marine", "agriculture"),
-  #          environment = fct_relevel(environment, "all", "wwt", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
-  # filter(category != "all") %>% # exclude "all" category for now (since can't get more than 100K entries from wos)
-  # mutate(category = fct_relevel(category, "wwt", "terrestrial", "freshwater", "marine", "agriculture"),
-         # environment = fct_relevel(environment, "wwt", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
+  select(uid, title, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category)
 
 # wrangle pao data
 pao_pubs_data <- pao_pubs_data_raw %>%
@@ -111,19 +93,9 @@ pao_pubs_data <- pao_pubs_data_raw %>%
          journal_fix = str_replace_all(str_to_title(journal), c(" Of " = " of ", " The " = " the ", "And" = "and", "&" = "and", " In " = " in ", " Et " = " et ")),         keywords_fix = str_to_lower(str_replace_all(keywords, " \\|\\ ", ",")),
          authors_fix = str_to_lower(str_replace_all(str_replace_all(str_replace_all(str_replace_all(authors, ", ", "_"), " \\|\\ ", ","), " ", "_"), "\\.", "")),
          journal_short = if_else(str_count(journal_fix, " ") >= 3, paste0(word(journal_fix, start = 1, end = 3), "..."), journal_fix)) %>%
-  select(uid, title, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category) # %>%
-  #   mutate(category = fct_relevel(category, "all", "wwt", "terrestrial", "freshwater", "marine", "agriculture"),
-  #          environment = fct_relevel(environment, "all", "wwt", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
-  # filter(category != "all") %>% # exclude "all" category for now (since can't get more than 100K entries from wos)
-  # mutate(category = fct_relevel(category, "wwt", "terrestrial", "freshwater", "marine", "agriculture"),
-  #        environment = fct_relevel(environment, "wwt", "soil", "sediment", "lake", "stream", "river", "freshwater", "marine", "ocean", "saltwater", "agriculture"))
-# mutate(keywords_fix = str_replace_all(str_replace_all(str_to_lower(keywords), " ", "_"), "_\\|_", ",")) %>%
-# separate(keywords_fix, into = paste("keyword_", 1:10, sep = ""), sep = ",") %>%
-# select(-keywords) %>%
-# group_by(uid) %>%
-# gather(key = keyword_num, value = keyword, 2:11, na.rm = TRUE)
-
+  select(uid, title, journal_fix, journal_short, year_fix, keywords_fix, authors_fix, environment, category)
 # exclude "all" category for now (since can't get more than 100K entries from wos)
+
 # phosphorus journal look-up
 phos_journal_lookup <- phos_pubs_data %>%
   select(journal_fix, journal_short) %>%
@@ -147,7 +119,6 @@ pao_journal_lookup <- pao_pubs_data %>%
 
 
 # ---- 4.1 calculate overall pub counts ----
-
 # get sum of counts for each category
 paper_counts_data_summary <- paper_counts_data %>%
   filter(category != "all") %>% # don't want this in summary
@@ -157,7 +128,7 @@ paper_counts_data_summary <- paper_counts_data %>%
 # microbio = 3990
 # polyp = 1648
 # pao = 464
-# but there could totally be overlap here!
+# there could totally be overlap here!
 
 # calculate fractions for broad categories
 paper_counts_data_frac <- paper_counts_data %>%
@@ -540,7 +511,7 @@ ggplot(data = all_pubs_time_data %>% filter(category == "terrestrial")) +
 
 
 # ---- 6.1 calculate journal-specific pub counts ----
-# phos pubs per jounal (top journal)
+# phos pubs per journal (top journal)
 phos_pubs_journal_data <- phos_pubs_data %>%
   filter(category != "all") %>% # exclude "all" category for now
   group_by(category, journal_fix) %>%
@@ -553,7 +524,7 @@ phos_pubs_journal_data <- phos_pubs_data %>%
   # mutate(category = fct_relevel(category, "all", "wwt", "terrestrial", "freshwater", "marine", "agriculture"))
   mutate(category = fct_relevel(category, "wwt", "terrestrial", "freshwater", "marine", "agriculture"))
 
-# microbio pubs per jounal (top journal)
+# microbio pubs per journal (top journal)
 microbio_pubs_journal_data <- microbio_pubs_data %>%
   filter(category != "all") %>% # exclude "all" category for now
   group_by(category, journal_fix) %>%
@@ -566,7 +537,7 @@ microbio_pubs_journal_data <- microbio_pubs_data %>%
   # mutate(category = fct_relevel(category, "all", "wwt", "terrestrial", "freshwater", "marine", "agriculture"))
   mutate(category = fct_relevel(category, "wwt", "terrestrial", "freshwater", "marine", "agriculture"))
 
-# polyp pubs per jounal (top journal)
+# polyp pubs per journal (top journal)
 polyp_pubs_journal_data <- polyp_pubs_data %>%
   filter(category != "all") %>% # exclude "all" category for now
   group_by(category, journal_fix) %>%
@@ -695,8 +666,7 @@ pao_author_pub_count_data <- pao_author_data %>%
   # ungroup()
 
 
-# ---- 8.x looking at general categories of articles ----
-
+# ---- 8.1 looking at general categories of articles ----
 # all polyp articles in the ag category
 polyp_ag_pubs_data <- polyp_pubs_data %>% 
   filter(category == "agriculture")
@@ -708,7 +678,8 @@ pao_ag_pubs_data <- pao_pubs_data %>%
   filter(category == "agriculture")
 # ota et al. 2016
 
-# ---- 8.1 calculate overlapping journal articles ----
+
+# ---- 8.2 calculate overlapping journal articles ----
 # phosphorus
 phos_set_data <- phos_pubs_data %>%
   select(uid, category) %>%
