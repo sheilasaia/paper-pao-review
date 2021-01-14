@@ -87,25 +87,42 @@ Briefly, we used the R `rwos` package and other R packages to pull data from the
 
 We included the raw data from each Web of Science query in this repository in the [raw\_data directory](https://github.com/sheilasaia/paper-pao-review/tree/master/data/raw_data) and all post-processed data are included in the [processed\_data directory](https://github.com/sheilasaia/paper-pao-review/tree/master/data/processed_data).
 
-We [ended here]
-
-FIXME (describe how the submitted data were generated from the raw or collected data)
+Besides the raw data that was obtained directly from Web of Science, we created the `wos\_topical\_paper\_counts\_raw.csv` raw data file by manually adding paper counts to the csv file for each corresponding Web of Science query. This file is the only data file that was created manually.
 
 **Instrument- or software-specific information needed to interpret the data:**<br>
 
-FIXME (include full name and version of software, and any necessary packages or libraries needed to run scripts)
+All data collection, processing, and analysis was done in R (v3.6.2) using RStudio desktop (v1.3.1093) on an iMac desktop (macOS Mojave v10.14.6, 2.3 GHz Intel Core i5, 16 GB 2133 MHz DD4, Intel Iris Plus Graphics 640 1536 MB).
+
+We also used the following R packages: `rwos` (v0.0.1), `tidyverse` (v1.3.0), `here` (v0.1), `beepr` (v1.3), `ggforce` (v0.3.1), `gridExtra` (v2.3), and `ggupset` (v0.3.0), and `renv` (v0.12.5).
+
+*NOTE:* Users of these scripts can use the `renv` R package to activate the R packages used in this R project repository. Run the code below to activate the R environment that we used for all analysis in your RStudio session.
+
+```
+# Make sure you are running code as an *RStudio project*. To do this, download the whole GitHub repository and double click on the paper-pao-review.Rproj file. This will open RStudio and anchor your RStudio session to this project. Once you have done this, follow the steps below.
+
+# 1. install the renv R package
+install.packages("renv")
+
+# 2. load the library
+libary(renv)
+
+# 3. initialize the environment in your RStudio session
+renv::activate()
+
+# 4. Run the scripts as you normally would.
+```
 
 **Standards and calibration information, if appropriate:**<br>
 
-FIXME
+There are no applicable standards and calibration information.
 
 **Environmental/experimental conditions:**<br>
 
-FIXME
+There are no applicable environmental/experimental conditions.
 
 **Describe any quality-assurance procedures performed on the data:**<br>
 
-FIXME
+We post-process raw Web of Science data using R. See the `wos\_data\_analysis\_script.R` (part 3) for more information.
 
 **People involved with sample collection, processing, analysis and/or submission:**<br>
 
@@ -113,9 +130,183 @@ Sheila Saia collected, processed, analyzed, and submitted the data using the cod
 
 ## Data & File Overview
 
-### 1. FIXME directory ###
+### 1. main directory ###
 
-#### 1.1 FIXME file ####
+**File List**
+
+The main directory contains the following documentation files:
+
+* `CITATION.md` - This file contains information on how to cite the data, code, and paper associated with this repository.
+* `CONTRIBUTING.md` - This file contains information on how to notify the maintainer of issues with the code.
+* `LICENSE.md` - This file contains information regarding how this work is licensed and how to give attribution.
+* `README.md` - This file (here) provides overall information on about the content and organization of this repository.
+
+The main directory contains the following R-related files:
+
+* `paper-pao-review.Rproj` - This is the RStudio project file.
+* `wos\_data\_retrieval\_script.R` - The purpose of this R script is to retrieve data from Web of Science.
+* `wos\_data\_analysis\_script.R` - The purpose of this R script is to process, analysis, and plot results of data retrieved from the Web of Science.
+
+The main directory contains the following sub-directories, which are explained in further detail below.
+
+* `data` - This directory contains the raw and processed data associated with the manuscript.
+* `figures` - This is the output directory for figures generated the `wos\_data\_analysis\_script.R script`.
+
+**Relationship Between Files**<br>
+
+Outputs from `wos\_data\_retrieval\_script.R` are needed to run `wos\_data\_analysis\_script.R`. Tabular outputs both of the R scripts (`.R` files) are found in the data sub-directories. See more details in sections 2 and 3 below. Figure outputs from `wos\_data\_analysis\_script.R` are found will be exported to the figure directory.
+
+### 2. data directory ###
+
+#### 2.1 raw\_data directory ####
+
+**File List & Relationship Between Files**
+
+The raw\_data directory contains raw Web of Science query results for the various searches included in the associated paper.
+
+The file naming convention is as follows. The majority of file names start with either `microbio*`, `pao*`, `polyp*`, and `phos*`, which refer to the four overall keyword search topics: "microbiology", "polyphosphate accumulating organisms", "polyphosphate", and "phosphate", respectively. The second part of the file name refers to additionally environmental-specific keywords that were added to the Web of Science topic search, including: `*_ag_*`, `*_fw_*`, `*_lake_*`, `*_marine_*`, `*_ocean_*`, `*_river_*`, `*_sed_*`, `*_soil_*`, `*_stream_*`, `*_sw_*`, `*_wwt_*`, which refer to the 11 environments included in queries used in this study: "agriculture", "freshwater", "lake", "marine", "ocean", "river", "stream", "sediment", "soil", "stream", "saltwater", and "wastewater treatment". For more details on these searches see the manuscript methods and Table S2 in the manuscript.
+
+There are three exception to this file naming structure. These are described below.
+
+First, there are three files that do not have an environmental-specific keyword. These are `microbio\_pubs\_raw.csv`, `polyp\_pubs\_raw.csv`, and `pao\_pubs\_raw.csv` and these files include all query results based on topic alone. Put another way, these queries may represent environments that are included in this study as well as those that are not. See the methods section i the paper (Section 2) and "all" category in Table S2 in the manuscript for further explanation. Note: there is no `phos\_pubs\_raw.csv` file because there were more than 10,000 query results for this search. In this case, query results could not be downloaded from Web of Science; we could only record the number of query results, which is reported in Table S2. For further explanation of this limitation, see the methods section of the paper (Section 2).
+
+Second, there are four files that end in `*all\_searches\_pubs\_raw.csv`. These refer to a merged version the Web of Science queries by topic and environment described as well as query results by topic for environments not included in this study (i.e., "all" category as described in the previous paragraph). Note: the `phos\_all\_searches\_pubs\_raw.csv` does not include "all" searches because of limitations described in the previous paragraph. The other three files; however, do include the "all" category results.
+
+Third, there are two files that start with `wos*`. These refer to Web of Science queries by year (i.e., `wos\_annual\_paper\_counts\_raw.csv`) used to generate Figure SX and summaries of keyword searches by topic (i.e., `wos\_topical\_paper\_counts\_raw.csv`) used to generate Tabls S2. Note: the  `wos\_annual\_paper\_counts\_raw.csv` was generated as an output from the `wos\_data\_retrieval\_script.R` script but `wos\_topical\_paper\_counts\_raw.csv` was generated manually as described above in the main directory file list.
+
+## Data-Specific Information For: `*topic*\_*environment*_pubs\_raw.csv` and similarly structured files (e.g., `microbio\_ag\_pubs\_raw.csv`) ##
+
+**Number of columns/variables**
+
+Number of columns: 17
+
+**Number of rows**
+
+Number of rows: varies
+
+**Variable list**<br>
+
+* uid - Web of Science unique publication identifier (accession number)
+* title - publication title
+* journal - publication journal
+* issue - publication issue number
+* volume - publication volume number
+* pages - publication page numbers
+* date -  publication date (month, or month-day)
+* year - publication year
+* authors - publication authors
+* keywords - publication keywords
+* doi - publication digital object identifier (DOI)
+* article_no - publication article number
+* isi_id - publication Institute for Scientific Information (ISI) identifier
+* issn - publication ISSN
+* isbn - publication ISBN
+* environment - detailed environment category (this study)
+* category - general environment category (this study)
+
+**Missing data codes**<br>
+
+Missing data is either labeled with "NA" for all columns except the authors and keywords columns, which are both left blank in the case of missing information.
+
+**Specialized formats or other abbreviations used:**
+
+All specialized formats and abbreviations are described here.
+
+## Data-Specific Information For: `*topic*\_all\_searches\_pubs\_raw.csv` and similarly structured files (e.g., `microbio\_all\_searches\_pubs\_raw.csv`)##
+
+**Number of columns/variables**
+
+Number of columns: 17
+
+**Number of rows**
+
+Number of rows: varies
+
+**Variable list**<br>
+
+* uid - Web of Science unique publication identifier (accession number)
+* title - publication title
+* journal - publication journal
+* issue - publication issue number
+* volume - publication volume number
+* pages - publication page numbers
+* date -  publication date (month, or month-day)
+* year - publication year
+* authors - publication authors
+* keywords - publication keywords
+* doi - publication digital object identifier (DOI)
+* article_no - publication article number
+* isi_id - publication Institute for Scientific Information (ISI) identifier
+* issn - publication ISSN
+* isbn - publication ISBN
+* environment - detailed environment category (this study)
+* category - general environment category (this study)
+
+**Missing data codes**<br>
+
+Missing data is either labeled with "NA" for all columns except the authors and keywords columns, which are both left blank in the case of missing information.
+
+**Specialized formats or other abbreviations used:**
+
+All specialized formats and abbreviations are described here.
+
+## Data-Specific Information For: `wos\_annual\_paper\_counts\_raw.csv` and similarly structured files ##
+
+**Number of columns/variables**
+
+FIXME
+
+**Number of rows**
+
+FIXME
+
+**Variable list**<br>
+
+FIXME (fill in variables and their meaning)
+
+**Missing data codes**<br>
+
+FIXME
+
+**Specialized formats or other abbreviations used:**
+
+FIXME
+
+## Data-Specific Information For: `wos\_topical\_paper\_counts\_raw.csv` and similarly structured files ##
+
+**Number of columns/variables**
+
+Number of columns: 4
+
+**Number of rows**
+
+Number of rows: 49
+
+**Variable list**<br>
+
+* keyword - topic keyword abbreviation (this study)
+* environment - detailed environmental keyword abbreviation (this study)
+* category - general environment keyword abbreviation (this study)
+* count - paper count (this study)
+
+**Missing data codes**<br>
+
+There is no missing data.
+
+**Specialized formats or other abbreviations used:**
+
+The following abbreviations are used in this file:
+
+* phosphorus (phos)
+* microbiology (microbio)
+* polyphosphate (polyp)
+* polyphosphate accumulating organism (pao)
+* wastewater treatment (wwt)
+* "all" refers to all environments included and NOT included in this study
+
+There are no specialized formats used in this file.
+
+#### 2.2 processed\_data directory ####
 
 **File List**
 
@@ -124,12 +315,6 @@ FIXME (list all files or folders, as appropriate for dataset organization contai
 **Relationship Between Files**<br>
 
 FIXME
-
-**Raw Data**<br>
-
-FIXME
-
-(repeat directory and file structure for all directories amd all files, i.e., 2., 2.1, 2.2, 3., etc.)
 
 ## Data-Specific Information For: FIXME (file name) ##
 
