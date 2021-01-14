@@ -174,7 +174,9 @@ Second, there are four files that end in `*all_searches_pubs_raw.csv`. These ref
 
 Third, there are two files that start with `wos*`. These refer to Web of Science queries by year (i.e., `wos_annual_paper_counts_raw.csv`) used to generate Figure SX and summaries of keyword searches by topic (i.e., `wos_topical_paper_counts_raw.csv`) used to generate Tabls S2. Note: the  `wos_annual_paper_counts_raw.csv` was generated as an output from the `wos_data_retrieval_script.R` script but `wos_topical_paper_counts_raw.csv` was generated manually as described above in the main directory file list.
 
-## Data-Specific Information For: `*topic*_*environment*_pubs_raw.csv` and similarly structured files (e.g., `microbio_ag_pubs_raw.csv`) ##
+## Data-Specific Information For: `*topic*_*environment*_pubs_raw.csv` and similar files ##
+
+For example, `microbio_ag_pubs_raw.csv`.
 
 **Number of columns/variables**
 
@@ -212,7 +214,9 @@ Missing data is either labeled with "NA" for all columns except the authors and 
 
 All specialized formats and abbreviations are described here.
 
-## Data-Specific Information For: `*topic*_all_searches_pubs_raw.csv` and similarly structured files (e.g., `microbio_all_searches_pubs_raw.csv`)##
+## Data-Specific Information For: `*topic*_all_searches_pubs_raw.csv` and similar files ##
+
+For example, `microbio_ag_pubs_raw.csv`.
 
 **Number of columns/variables**
 
@@ -250,7 +254,7 @@ Missing data is either labeled with "NA" for all columns except the authors and 
 
 All specialized formats and abbreviations are described here.
 
-## Data-Specific Information For: `wos_annual_paper_counts_raw.csv` and similarly structured files ##
+## Data-Specific Information For: `wos_annual_paper_counts_raw.csv` file ##
 
 **Number of columns/variables**
 
@@ -272,7 +276,7 @@ FIXME
 
 FIXME
 
-## Data-Specific Information For: `wos_topical_paper_counts_raw.csv` and similarly structured files ##
+## Data-Specific Information For: `wos_topical_paper_counts_raw.csv` file ##
 
 **Number of columns/variables**
 
