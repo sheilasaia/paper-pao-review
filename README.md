@@ -53,37 +53,41 @@ As of 2020-12-10 there are no other publications that cite or use these data.
 
 This dataset and associated R code are available at https://github.com/sheilasaia/paper-pao-review and via Zenodo (XXXX). The associated publication is available via Environmental Science & Technology (https://doi.org/10.1086/691439) and the Earth ArXiv (preprint: https://eartharxiv.org/repository/view/1132/).
 
-**Links/relationships to ancillary data sets**<br>
+**Links/relationships to ancillary data**<br>
 
-FIXME
+There are no ancillary data associated with this paper.
 
 **Data derived from another source**<br>
 
-FIXME
+We downloaded all data associated with this paper on 2020-03-10 from the [Web of Science](https://www.webofknowledge.com) servers using the [`rwos` R package](https://github.com/juba/rwos). Please see the paper and code for a full description of methods.
 
 **Additional related data collected that was not included in the current data package**<br>
 
-FIXME
+There are no other related data collected besides what is included here.
 
 **Are there multiple versions of the dataset?**<br>
 
-FIXME
+There are no other versions of the data associated with this paper.
 
 **Recommended citation for the data**<br>
 
-FIXME
+See [CITATION.md](https://github.com/sheilasaia/paper-pao-review/blob/master/CITATION.md) for the recommended citation for these data and code.
 
 **Paper Availability**<br>
 
-FIXME
+The associated publication is available via Environmental Science & Technology (https://doi.org/10.1086/691439) and the Earth ArXiv (preprint: https://eartharxiv.org/repository/view/1132/).
 
 ## Methodological Information ##
 
 **Description of methods used for collection/generation of data:**<br>
 
-FIXME (include links or references to publications or other documentation containing experimental design or protocols used in data collection)
+Briefly, we used the R `rwos` package and other R packages to pull data from the Web of Science servers and generate figures included in the manuscript. We provide a detailed description of the methods used to collect and analyze these data in the associated code and publication. The publication is available via Environmental Science & Technology (https://doi.org/10.1086/691439) and the Earth ArXiv (preprint: https://eartharxiv.org/repository/view/1132/).
 
 **Methods for processing the data:**<br>
+
+We included the raw data from each Web of Science query in this repository in the [raw\_data directory](https://github.com/sheilasaia/paper-pao-review/tree/master/data/raw_data) and all post-processed data are included in the [processed\_data directory](https://github.com/sheilasaia/paper-pao-review/tree/master/data/processed_data).
+
+We [ended here]
 
 FIXME (describe how the submitted data were generated from the raw or collected data)
 
@@ -105,7 +109,7 @@ FIXME
 
 **People involved with sample collection, processing, analysis and/or submission:**<br>
 
-FIXME
+Sheila Saia collected, processed, analyzed, and submitted the data using the code associated with this repository. If you find any errors, please submit [an issue](https://github.com/sheilasaia/paper-pao-review/issues) or contact Sheila Saia at ssaia at ncsu dot edu.
 
 ## Data & File Overview
 
