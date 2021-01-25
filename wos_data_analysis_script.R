@@ -516,8 +516,8 @@ phos_pubs_journal_data <- phos_pubs_data %>%
   count() %>%
   ungroup() %>%
   group_by(category) %>%
-  mutate(pub_rank = dense_rank(desc(n))) %>%
-  filter(pub_rank <= 5) %>%
+  mutate(journal_rank = dense_rank(desc(n))) %>%
+  filter(journal_rank <= 5) %>%
   ungroup() %>%
   mutate(category = fct_relevel(category, "wwt", "terrestrial", "freshwater", "marine", "agriculture"))
 
@@ -528,8 +528,8 @@ microbio_pubs_journal_data <- microbio_pubs_data %>%
   count() %>%
   ungroup() %>%
   group_by(category) %>%
-  mutate(pub_rank = dense_rank(desc(n))) %>%
-  filter(pub_rank <= 5) %>%
+  mutate(journal_rank = dense_rank(desc(n))) %>%
+  filter(journal_rank <= 5) %>%
   ungroup() %>%
   mutate(category = fct_relevel(category, "wwt", "terrestrial", "freshwater", "marine", "agriculture"))
 
@@ -540,8 +540,8 @@ polyp_pubs_journal_data <- polyp_pubs_data %>%
   count() %>%
   ungroup() %>%
   group_by(category) %>%
-  mutate(pub_rank = dense_rank(desc(n))) %>%
-  filter(pub_rank <= 5) %>%
+  mutate(journal_rank = dense_rank(desc(n))) %>%
+  filter(journal_rank <= 5) %>%
   ungroup() %>%
   mutate(category = fct_relevel(category, "wwt", "terrestrial", "freshwater", "marine", "agriculture"))
 
@@ -552,7 +552,7 @@ polyp_all_pubs_journal_data <- polyp_pubs_data %>%
   count() %>%
   ungroup()  %>%
   group_by(category) %>%
-  mutate(pub_rank = dense_rank(desc(n)))
+  mutate(journal_rank = dense_rank(desc(n)))
 # top three (lowest rank) are in polymer sciences and biochemistry
 
 # find top journals of polyp papers that are outside the five categories
@@ -575,25 +575,13 @@ polyp_outside_top20_pubs <- polyp_outside_pubs %>%
   count() %>%
   ungroup()  %>%
   group_by(category) %>%
-  mutate(pub_rank = dense_rank(desc(n))) %>%
-  filter(pub_rank <= 20) %>%
+  mutate(journal_rank = dense_rank(desc(n))) %>%
+  filter(journal_rank <= 20) %>%
   ungroup() %>%
-  select(pub_rank, journal_fix, n)
+  select(journal_rank, journal_fix, n)
 
 # export for making Table S4
 write_csv(polyp_outside_top20_pubs, paste0(tabular_processed_data_path, "/table_s4_results.csv"))
-
-# pao pubs per journal (top journal)
-pao_pubs_journal_data <- pao_pubs_data %>%
-  filter(category != "all") %>% # exclude "all" category for now
-  group_by(category, journal_fix) %>%
-  count() %>%
-  ungroup() %>%
-  group_by(category) %>%
-  mutate(pub_rank = dense_rank(desc(n))) %>%
-  filter(pub_rank <= 5) %>%
-  ungroup() %>%
-  mutate(category = fct_relevel(category, "wwt", "terrestrial", "freshwater", "marine", "agriculture"))
 
 
 # ---- 7.1 calculate overlapping sets by topic ----
@@ -729,7 +717,7 @@ write_csv(polyp_pao_envir_join_pubs_data, paste0(tabular_processed_data_path, "/
 # SECTION 6.1
 # 459 is from Table S2 (soil + sed for polyp)
 # 26 is from Table S2 (soil + sed for pao)
-# 52076 is from Table S2 (soil + sed for phos)
+# 52192 is from Table S2 (soil + sed for phos)
 # 1584 is from Table S2 (soil + sed for microbio)
 
 # polyp in terrestrial only papers
@@ -929,7 +917,7 @@ write_csv(mar_polyp_pao_pubs_data, paste0(tabular_processed_data_path, "/polyp_p
 
 # SECTION 7
 # 184042 is from Table S2
-# 52076 is from Table S2 (soil + sed for phos)
+# 52192 is from Table S2 (soil + sed for phos)
 
 # phos terrestrial only papers
 phos_terr_only_set_data <- phos_set_data %>%
@@ -1003,53 +991,7 @@ dev.off()
 
 
 
-# using UpSetR
-# tidy_movies %>%
-#   distinct(title, year, length, .keep_all=TRUE) %>%
-#   unnest() %>%
-#   mutate(GenreMember=1) %>%
-#   spread(Genres, GenreMember, fill=0) %>%
-#   as.data.frame() %>%
-#   UpSetR::upset(sets = c("Action", "Romance", "Short", "Comedy", "Drama"), keep.order = TRUE)
 
-# using parallel sets
-data0 <- Titanic
-data1 <- reshape2::melt(Titanic)
-data2 <- gather_set_data(data1, 1:4)
-ggplot(data2, aes(x, id = id, split = y, value = value)) +
-  geom_parallel_sets(aes(fill = Sex), alpha = 0.3, axis.width = 0.1) +
-  geom_parallel_sets_axes(axis.width = 0.1) +
-  geom_parallel_sets_labels(colour = 'white')
-
-# using ggupset
-blah0 <- tidy_movies 
-blah1 <- blah0 %>%
-  distinct(title, year, length, .keep_all=TRUE)
-ggplot(data = blah1, aes(x=Genres)) +
-  geom_bar() +
-  scale_x_upset(n_intersections = 20)
-
-# count number of papers that overlap between searches
-phos_pubs_overlap_summary <- phos_pubs_data %>%
-  group_by(uid) %>%
-  count(name = "n_overlaps") %>%
-  ungroup()
-
-# count number of overlapping papers
-phos_pubs_overlap_count <- phos_pubs_overlap_summary %>%
-  filter(category != "all") %>%
-  group_by(n_overlaps) %>%
-  count(name = "n_papers")
-
-# check that lengths match
-sum(phos_pubs_overlap_count$n_papers)
-length(unique(phos_pubs_data$uid))
-
-phos_pubs_overlap_data <- phos_pubs_data %>%
-  left_join(phos_pubs_overlap_summary, by = "uid")  %>%
-  #filter(n_overlaps > 1) %>%
-  select(uid, title, n_overlaps, environment) %>%
-  arrange(n_overlaps, uid)
 
 
 # ---- delete? ----
@@ -1175,3 +1117,51 @@ phos_pubs_overlap_data <- phos_pubs_data %>%
 # # but some papers are repeated between the two categories so we remove repeats to get 412
 # # export
 # write_csv(x = polyp_terr_pubs_data, path = paste0(tabular_processed_data_path, "/polyp_all_terr_pubs.csv"))
+
+# using UpSetR
+# tidy_movies %>%
+#   distinct(title, year, length, .keep_all=TRUE) %>%
+#   unnest() %>%
+#   mutate(GenreMember=1) %>%
+#   spread(Genres, GenreMember, fill=0) %>%
+#   as.data.frame() %>%
+#   UpSetR::upset(sets = c("Action", "Romance", "Short", "Comedy", "Drama"), keep.order = TRUE)
+
+# # using parallel sets
+# data0 <- Titanic
+# data1 <- reshape2::melt(Titanic)
+# data2 <- gather_set_data(data1, 1:4)
+# ggplot(data2, aes(x, id = id, split = y, value = value)) +
+#   geom_parallel_sets(aes(fill = Sex), alpha = 0.3, axis.width = 0.1) +
+#   geom_parallel_sets_axes(axis.width = 0.1) +
+#   geom_parallel_sets_labels(colour = 'white')
+# 
+# # using ggupset
+# blah0 <- tidy_movies 
+# blah1 <- blah0 %>%
+#   distinct(title, year, length, .keep_all=TRUE)
+# ggplot(data = blah1, aes(x=Genres)) +
+#   geom_bar() +
+#   scale_x_upset(n_intersections = 20)
+# 
+# # count number of papers that overlap between searches
+# phos_pubs_overlap_summary <- phos_pubs_data %>%
+#   group_by(uid) %>%
+#   count(name = "n_overlaps") %>%
+#   ungroup()
+# 
+# # count number of overlapping papers
+# phos_pubs_overlap_count <- phos_pubs_overlap_summary %>%
+#   filter(category != "all") %>%
+#   group_by(n_overlaps) %>%
+#   count(name = "n_papers")
+# 
+# # check that lengths match
+# sum(phos_pubs_overlap_count$n_papers)
+# length(unique(phos_pubs_data$uid))
+# 
+# phos_pubs_overlap_data <- phos_pubs_data %>%
+#   left_join(phos_pubs_overlap_summary, by = "uid")  %>%
+#   #filter(n_overlaps > 1) %>%
+#   select(uid, title, n_overlaps, environment) %>%
+#   arrange(n_overlaps, uid)
