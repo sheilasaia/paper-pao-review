@@ -9,6 +9,13 @@
 # ---- notes ----
 # notes: 
 
+# method for setting up renv initially (by sheila saia on 2021-01-25)
+# (.packages()) # to check loaded packages
+# initialize R environment
+# renv::init()
+# for more information about renv see https://rstudio.github.io/renv/index.html
+# there are additional notes on package versions and renv in the README.md file of this repository
+
 
 # ---- to do ----
 # to do list
@@ -21,6 +28,15 @@ library(here)
 library(ggforce)
 library(gridExtra)
 library(ggupset)
+library(renv)
+
+# if you're having trouble loading these libraries or getting the code to work
+# you can activate the R environment used in this study from the renv.lock file
+# you might have to adjust package settings depending on your r setup
+# to activate the R environment use:
+# renv::activate()
+# for more information about renv see https://rstudio.github.io/renv/index.html
+# there are additional notes on package versions and renv in the README.md file of this repository
 
 # define paths
 tabular_raw_data_path <- here("data", "raw_data")

@@ -18,6 +18,12 @@
 # USFS only authorized for "SCI" (Science Citation Index Expanded)
 # http://help.incites.clarivate.com/inCites2Live/dataAndSubscriptionNotificationsGroup/dataAndSubsNotice.html
 
+# method for setting up renv initially (by sheila saia on 2021-01-25)
+# (.packages()) # to check loaded packages
+# initialize R environment
+# renv::init()
+# for more information about renv see https://rstudio.github.io/renv/index.html
+
 
 # ---- to do ----
 # to do list
@@ -30,6 +36,15 @@ library(rwos)
 library(tidyverse)
 library(here)
 library(beepr)
+library(renv)
+
+# if you're having trouble loading these libraries or getting the code to work
+# you can activate the R environment used in this study from the renv.lock file
+# you might have to adjust package settings depending on your r setup
+# to activate the R environment use:
+# renv::activate()
+# for more information about renv see https://rstudio.github.io/renv/index.html
+# there are addtional notes in the README.md file of this repository
 
 # define path to raw data directory
 raw_data_path <- here("data", "raw_data")
