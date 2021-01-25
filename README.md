@@ -160,7 +160,7 @@ Outputs from `wos_data_retrieval_script.R` are needed to run `wos_data_analysis_
 
 #### 2.1 raw_data directory ####
 
-> A "\*" (star) in the file name of this README document indicates a [wild card](). That is, a number of characters may take the place of the "\*".
+> A "\*" (asterisk) in the file name of this README document indicates a [wild card](https://tldp.org/LDP/GNU-Linux-Tools-Summary/html/x11655.htm). That is, a number of characters may take the place of the "\*".
 
 **File List & Relationship Between Files**
 
@@ -315,7 +315,7 @@ There are no specialized formats used in this file.
 
 #### 2.2 processed_data directory ####
 
-> A "\*" (star) in the file name of this README document indicates a [wild card](). That is, a number of characters may take the place of the "\*".
+> A "\*" (asterisk) in the file name of this README document indicates a [wild card](https://tldp.org/LDP/GNU-Linux-Tools-Summary/html/x11655.htm). That is, a number of characters may take the place of the "\*".
 
 **File List & Relationship Between Files**
 
