@@ -59,7 +59,7 @@ There are no ancillary data associated with this paper.
 
 **Data derived from another source**<br>
 
-We downloaded all data associated with this paper on 2020-03-10 from the [Web of Science](https://www.webofknowledge.com) servers using the [`rwos` R package](https://github.com/juba/rwos). Please see the paper and code for a full description of methods.
+We downloaded all data associated with this paper on 2020-03-10 from the [Web of Science](https://www.webofknowledge.com) servers using the [`rwos` R package](https://github.com/juba/rwos). Please see the manuscript methods (Section 2) and code for a full description.
 
 **Additional related data collected that was not included in the current data package**<br>
 
@@ -164,11 +164,11 @@ Outputs from `wos_data_retrieval_script.R` are needed to run `wos_data_analysis_
 
 The raw_data directory contains raw Web of Science query results for the various searches included in the associated paper.
 
-The file naming convention is as follows. The majority of file names start with either `microbio*`, `pao*`, `polyp*`, and `phos*`, which refer to the four overall keyword search topics: "microbiology", "polyphosphate accumulating organisms", "polyphosphate", and "phosphate", respectively. The second part of the file name refers to additionally environmental-specific keywords that were added to the Web of Science topic search, including: `*_ag_*`, `*_fw_*`, `*_lake_*`, `*_marine_*`, `*_ocean_*`, `*_river_*`, `*_sed_*`, `*_soil_*`, `*_stream_*`, `*_sw_*`, `*_wwt_*`, which refer to the 11 environments included in queries used in this study: "agriculture", "freshwater", "lake", "marine", "ocean", "river", "stream", "sediment", "soil", "stream", "saltwater", and "wastewater treatment". For more details on these searches see the manuscript methods and Table S2 in the manuscript.
+The file naming convention is as follows. The majority of file names start with either `microbio*`, `pao*`, `polyp*`, and `phos*`, which refer to the four overall keyword search topics: "microbiology", "polyphosphate accumulating organisms", "polyphosphate", and "phosphate", respectively. The second part of the file name refers to additionally environmental-specific keywords that were added to the Web of Science topic search, including: `*_ag_*`, `*_fw_*`, `*_lake_*`, `*_marine_*`, `*_ocean_*`, `*_river_*`, `*_sed_*`, `*_soil_*`, `*_stream_*`, `*_sw_*`, `*_wwt_*`, which refer to the 11 environments included in queries used in this study: "agriculture", "freshwater", "lake", "marine", "ocean", "river", "stream", "sediment", "soil", "stream", "saltwater", and "wastewater treatment". For more details on these searches see the manuscript methods (Section 2) and Table S2 in the manuscript.
 
 There are three exception to this file naming structure. These are described below.
 
-First, there are three files that do not have an environmental-specific keyword. These are `microbio_pubs_raw.csv`, `polyp_pubs_raw.csv`, and `pao_pubs_raw.csv` and these files include all query results based on topic alone. Put another way, these queries may represent environments that are included in this study as well as those that are not. See the methods section i the paper (Section 2) and "all" category in Table S2 in the manuscript for further explanation. Note: there is no `phos_pubs_raw.csv` file because there were more than 10,000 query results for this search. In this case, query results could not be downloaded from Web of Science; we could only record the number of query results, which is reported in Table S2. For further explanation of this limitation, see the methods section of the paper (Section 2).
+First, there are three files that do not have an environmental-specific keyword. These are `microbio_pubs_raw.csv`, `polyp_pubs_raw.csv`, and `pao_pubs_raw.csv` and these files include all query results based on topic alone. Put another way, these queries may represent environments that are included in this study as well as those that are not. See the manuscript methods (Section 2) and "all" category in Table S2 in the manuscript for further explanation. Note: there is no `phos_pubs_raw.csv` file because there were more than 10,000 query results for this search. In this case, query results could not be downloaded from Web of Science; we could only record the number of query results, which is reported in Table S2. For further explanation of this limitation, see the manuscript methods (Section 2).
 
 Second, there are four files that end in `*all_searches_pubs_raw.csv`. These refer to a merged version the Web of Science queries by topic and environment described as well as query results by topic for environments not included in this study (i.e., "all" category as described in the previous paragraph). Note: the `phos_all_searches_pubs_raw.csv` does not include "all" searches because of limitations described in the previous paragraph. The other three files; however, do include the "all" category results.
 
@@ -258,23 +258,24 @@ All specialized formats and abbreviations are described here.
 
 **Number of columns/variables**
 
-FIXME
+Number of columns: 2
 
 **Number of rows**
 
-FIXME
+Number of rows: 31
 
 **Variable list**<br>
 
-FIXME (fill in variables and their meaning)
+* year - year
+* wos_wide_count - number of publications published in Web of Science (wos)
 
 **Missing data codes**<br>
 
-FIXME
+There are no missing values.
 
 **Specialized formats or other abbreviations used:**
 
-FIXME
+There are no specialized formats or abbreviations used in this file.
 
 ## Data-Specific Information For: `wos_topical_paper_counts_raw.csv` file ##
 
@@ -312,32 +313,158 @@ There are no specialized formats used in this file.
 
 #### 2.2 processed_data directory ####
 
-**File List**
+**File List & Relationship Between Files**
 
-FIXME (list all files or folders, as appropriate for dataset organization contained in the dataset, with a brief description)
+The processed_data directory contains post-processed Web of Science results for the various searches included in the associated paper.
 
-**Relationship Between Files**<br>
+The file naming convention is as follows. The majority of file names start with either `microbio*`, `pao*`, `polyp*`, and `phos*`, which refer to the four overall keyword search topics: "microbiology", "polyphosphate accumulating organisms", "polyphosphate", and "phosphate", respectively. The second part of the file name refers to additionally environmental category-specific keywords that were added to the Web of Science topic search, including: `*_ag_*`, `*_fresh_*`, `*_mar_*`, `*_terr_*`, and `*_wwt_*`, which refer to the 5 environmental categories included in queries used in this study: "agriculture", "freshwater", "marine", "terrestrial", and, and "wastewater treatment", respectively. For more details on these searches see the manuscript methods (Section 2) and Table S2 in the manuscript.
 
-FIXME
+Additional file naming conventions are as follows. Files with `*_all_searches_pubs.csv` included in the name, refer to merged Web of Science query results generated for the four main keyword searches using `wos_data_retrieval_script.R`. NOTE: The  `phos_all_searches_pubs.csv`does not include results in the "all" category because there were more than 100K results and these could not be downloaded. See note in `wos_data_retrieval_script.R` and the methods section of the manuscript (Section 2) for further details. Files with `*_set_data.csv*` included in the name, refer to Web of Science query results sets generated for the four main keyword searches using `wos_data_analysis_script.R` (see code section 7.1). These results were used to make Figure 3.
 
-## Data-Specific Information For: FIXME (file name) ##
+The remaining files listed below refer to filtered versions of the `*_all_searches_pubs.csv` and `*_set_data.csv` data that were required for the discussion of meta-analysis results in the manuscript. These files all have the same column and row format as the `*_all_searches_pubs.csv`. Filtering was done in the `wos_data_analysis_script.R` and files were exported (see code section 7.2) to the processed_data directory. These remaining are as follows:
+
+* `polyp_all_ag_pubs.csv` - Filtered `polyp_all_searches_pubs.csv` to include all publications in the "agricultural" category.
+* `pao_all_ag_pubs.csv` - Filtered `pao_all_searches_pubs.csv` to include all publications in the "agricultural" category.
+* `polyp_wwt_only_pubs.csv` - Filtered `polyp_set_data.csv` to publications that only include "wastewater treatment" category publications (i.e., they had no overlap with other categories).
+* `pao_wwt_only_pubs.csv` - Filtered `pao_set_data.csv` to publications that only include "wastewater treatment" category publications (i.e., they had no overlap with other categories).
+* `polyp_pao_mar_fresh_terr_pubs.csv` - Joined `polyp_all_searches_pubs.csv`and `polyp_all_searches_pubs.csv` to find publications in both keywords that included "marine" AND "freshwater" AND "terrestrial" category publications.
+* `polyp_terr_only_pubs.csv` - Filtered `polyp_set_data.csv` to publications that only include "terrestrial" category publications (i.e., they had no overlap with other categories).
+* `pao_terr_only_pubs.csv` - Filtered `pao_set_data.csv` to publications that only include "terrestrial" category publications (i.e., they had no overlap with other categories).
+* `polyp_terr_plus_pubs.csv` - Filtered `polyp_set_data.csv` to include all publications in the "terrestrial" category (i.e., they had overlap with terrestrial and at least one or more other category).
+* `pao_terr_wwt_pubs.csv` -  Filtered `pao_set_data.csv` to publications that included "terrestrial" and "wastewater treatment" category publications (i.e., they had overlap with these two categories only).
+* `terr_polyp_pao_pubs.csv` - Joined `polyp_all_searches_pubs.csv`and `polyp_all_searches_pubs.csv` to find publications in both keywords that included "terrestrial" category publications.
+* `polyp_fresh_only_pubs.csv` - Filtered `polyp_set_data.csv` to publications that only include "freshwater" category publications (i.e., they had no overlap with other categories).
+* `pao_fresh_wwt_pubs.csv` - Filtered `pao_set_data.csv` to publications that included "freshwater" and "wastewater treatment" category publications (i.e., they had overlap with these two categories only).
+* `fresh_polyp_pao_pubs.csv` - Joined `polyp_all_searches_pubs.csv`and `polyp_all_searches_pubs.csv` to find publications in both keywords that included "freshwater" category publications.
+* `polyp_mar_only_pubs.csv` - Filtered `polyp_set_data.csv` to publications that only include "marine" category publications (i.e., they had no overlap with other categories).
+* `pao_mar_wwt_pubs.csv` - Filtered `pao_set_data.csv` to publications that included "marine" and "wastewater treatment" category publications (i.e., they had overlap with these two categories only).
+* `polyp_pao_mar_pubs.csv` - Joined `polyp_all_searches_pubs.csv`and `polyp_all_searches_pubs.csv` to find publications in both keywords that included "marine" category publications.
+* `phos_terr_only_pubs.csv` - Filtered `phos_set_data.csv` to publications that only include "terrestrial" category publications (i.e., they had no overlap with other categories).
+
+The final file included here is the `table_s4_results.csv` file, which was generated in the `wos_data_analysis_script.R` (see code section 6.1) for Table S4.
+
+## Data-Specific Information For: `*_all_searches_pubs.csv` ##
 
 **Number of columns/variables**
 
-FIXME
+* uid - Web of Science unique publication identifier (accession number)
+* title - publication title
+* journal_fix - publication journal with title case fixed
+* journal_short - publication journal shorted to first three words
+* year_fix - publication year with white space removed and as a number
+* keywords_fix - publication keywords with spacing removed and separated by commas
+* authors_fix - publication authors with spaces replaced with "_" and separated by commas
+* environment - detailed environment category (this study)
+* category - general environment category (this study)
 
 **Number of rows**
 
-FIXME
+Number of rows: Varies
 
 **Variable list**<br>
 
-FIXME (fill in variables and their meaning)
+Number of columns: 9
 
 **Missing data codes**<br>
 
-FIXME
+Missing data is labeled with "NA".
 
 **Specialized formats or other abbreviations used:**
 
-FIXME
+The following abbreviations are used in these files:
+
+* phosphorus (phos)
+* microbiology (microbio)
+* polyphosphate (polyp)
+* polyphosphate accumulating organism (pao)
+* wastewater treatment (wwt)
+* "all" refers to all environments included and NOT included in this study
+
+There are no specialized formats used in these files.
+
+## Data-Specific Information For: `*_set_data.csv` ##
+
+**Number of columns/variables**
+
+* uid - Web of Science unique publication identifier (accession number)
+* category_str - general environment category (this study) string listing all the categories that the publication fell into for Web of Science queries
+* count - length of categories included in category_str (i.e., "marine" would have a count of one while "marine,terrestrial" would have a count of two), this is redundant but helpful for filtering and sorting.
+
+**Number of rows**
+
+Number of rows: varies
+
+**Variable list**<br>
+
+Number of columns: 3
+
+**Missing data codes**<br>
+
+There is no missing data.
+
+**Specialized formats or other abbreviations used:**
+
+There are no specialized formats or abbreviations used in these files.
+
+## Data-Specific Information For: `polyp_all_ag_pubs.csv` and other remaining files described above ##
+
+**Number of columns/variables**
+
+* uid - Web of Science unique publication identifier (accession number)
+* title - publication title
+* journal_fix - publication journal with title case fixed
+* journal_short - publication journal shorted to first three words
+* year_fix - publication year with white space removed and as a number
+* keywords_fix - publication keywords with spacing removed and separated by commas
+* authors_fix - publication authors with spaces replaced with "_" and separated by commas
+* environment - detailed environment category (this study)
+* category - general environment category (this study)
+
+**Number of rows**
+
+Number of rows: varies
+
+**Variable list**<br>
+
+Number of columns: 9
+
+**Missing data codes**<br>
+
+Missing data is labeled with "NA".
+
+**Specialized formats or other abbreviations used:**
+
+The following abbreviations are used in these files:
+
+* phosphorus (phos)
+* microbiology (microbio)
+* polyphosphate (polyp)
+* polyphosphate accumulating organism (pao)
+* wastewater treatment (wwt)
+* "all" refers to all environments included and NOT included in this study
+
+There are no specialized formats used in these files.
+
+## Data-Specific Information For: `table_s4_results.csv` ##
+
+**Number of columns/variables**
+
+* journal_rank - journal rank (i.e., 1 is highest rank and higher numbers indicate lower rank)
+* journal_fix - journal with title case fixed
+* n - number of publications (per journal) in Web of Science that are queried using the keyword "polyphospate" and are NOT represented in the five categories included in this study
+
+**Number of rows**
+
+Number of rows: 23
+
+**Variable list**<br>
+
+Number of columns: 3
+
+**Missing data codes**<br>
+
+There is no missing data.
+
+**Specialized formats or other abbreviations used:**
+
+There are no specialized formats or abbreviations used in these files.
