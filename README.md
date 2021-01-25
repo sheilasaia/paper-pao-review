@@ -178,7 +178,7 @@ Third, there are two files that start with `wos*`. These refer to Web of Science
 
 ## Data-Specific Information For: `*(topic)_*(environment)*_pubs_raw.csv` and similar files ##
 
-> Here, \*(topic)\* refers to one of the four topics discussed above and *(environment)* refers to one of the 11 environments discussed above.
+> Here, \*(topic)\* refers to one of the four topics discussed above and \*(environment)\* refers to one of the 11 environments discussed above.
 
 For example, `microbio_ag_pubs_raw.csv`.
 
