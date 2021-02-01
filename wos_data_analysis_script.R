@@ -663,8 +663,19 @@ pao_set_data <- pao_pubs_data %>%
 # ---- 7.2 count calculations for main text (Sections 4-7) ----
 # SECTION 4
 # 9230 is from Table S2
+
+# 22.2% is from summing all bars in in Figure 2C
+# 10.1 + 5 + 4 + 2.9 + 0.2
+# sum(paper_counts_data_frac$count_perc[paper_counts_data_frac$keyword=="polyp"])
+
 # 930 is from Table S2
+# 10.1% is from 930 / 9230 * (100)
+
+# 11.9% is from summing terr + fw + mar bars in Figure 2C
+# 2.9 + 4 + 5
+
 # 1094 is from Table S2 (terr + mar + freshwater for polyp)
+# 290 + 169 + 159 + 62 + 44 + 102 + 138 + 34 + 96 + 14
 
 # all polyp articles in the ag category
 polyp_ag_pubs_data <- polyp_pubs_data %>% 
@@ -712,9 +723,25 @@ write_csv(x = pao_wwt_only_set_data, path = paste0(tabular_processed_data_path, 
 
 # SECTION 5
 # 797 is from Table S2
+
+# 94.3% is from Table S2
+# (655 + 18 + 11 + 11 + 25 + 3 + 13 + 6 + 2 + 7 + 1) / 797 * 100
+# this calc has some papers that overlap
+# sum(paper_counts_data_frac$count_perc[paper_counts_data_frac$keyword=="pao"])
+# this considers overlap and removes (used this)
+
 # 655 is from Table S2
+
+# 82.2% is from Table S2
+# 655 / 797 * 100
+
 # 601 is from above "pao wwt only papers"
+
 # 96 is from Table S2 (terr + mar + freshwater for pao)
+# 18 + 11 + 11 + 25 + 3 + 13 + 6 + 2 + 7
+
+# 12% is from Figure 2D
+# 1.9 + 6.5 + 3.6
 
 # pao and polyp in terrestrial, freshwater, and marine
 polyp_envir_pubs_data <- polyp_pubs_data %>%
@@ -732,9 +759,20 @@ write_csv(polyp_pao_envir_join_pubs_data, paste0(tabular_processed_data_path, "/
 
 # SECTION 6.1
 # 459 is from Table S2 (soil + sed for polyp)
-# 26 is from Table S2 (soil + sed for pao)
+# 290 + 169
+
+# 29 is from Table S2 (soil + sed for pao)
+# 18 + 11
+
 # 52192 is from Table S2 (soil + sed for phos)
+# 39597 + 12595
+
 # 1584 is from Table S2 (soil + sed for microbio)
+# 1139 + 445
+
+# 3.1% comes from Figure S4C (soil bar percent)
+
+# 1.8% comes from Figure S4C (sed bar percent)
 
 # polyp in terrestrial only papers
 polyp_terr_only_set_data <- polyp_set_data %>%
@@ -774,7 +812,6 @@ pao_terr_calc_top/pao_terr_calc_bot * 100 # = 19.2%
 # export
 write_csv(x = pao_terr_only_set_data, path = paste0(tabular_processed_data_path, "/pao_terr_only_pubs.csv"))
 
-# TODO (check)
 # polyp in terrestrial and other papers
 polyp_terr_plus_other_set_data <- polyp_set_data %>%
   filter(count >= 2) %>%
@@ -786,10 +823,10 @@ polyp_terr_plus_other_set_data <- polyp_set_data %>%
 dim(polyp_terr_plus_other_set_data)[1]
 # 180
 # calculate percent for main text
-polyp_terr_plus_calc_top <- dim(polyp_terr_plus_other_set_data)[1] # 180
-polyp_all_terr_pubs <- polyp_pubs_data %>% filter(category == "terrestrial")
-polyp_terr_plus_calc_bot <- length(unique(polyp_all_terr_pubs$uid)) # 412
-polyp_terr_plus_calc_top/polyp_terr_plus_calc_bot * 100 # = 43.7%
+# polyp_terr_plus_calc_top <- dim(polyp_terr_plus_other_set_data)[1] # 180
+# polyp_all_terr_pubs <- polyp_pubs_data %>% filter(category == "terrestrial")
+# polyp_terr_plus_calc_bot <- length(unique(polyp_all_terr_pubs$uid)) # 412
+# polyp_terr_plus_calc_top/polyp_terr_plus_calc_bot * 100 # = 43.7%
 # can't just sum soil and sediment values in Table S2 because this includes some of the same papers
 # export
 write_csv(x = polyp_terr_plus_other_set_data, path = paste0(tabular_processed_data_path, "/polyp_terr_plus_pubs.csv"))
@@ -807,7 +844,6 @@ dim(pao_terr_wwt_set_data)[1]
 # export
 write_csv(x = pao_terr_wwt_set_data, path = paste0(tabular_processed_data_path, "/pao_terr_wwt_pubs.csv"))
 
-# TODO (check)
 # pao in terrestrial and other papers
 pao_terr_plus_other_set_data <- pao_set_data %>%
   filter(count >= 2) %>%
@@ -820,6 +856,15 @@ dim(pao_terr_plus_other_set_data)[1]
 # 21
 # export
 write_csv(x = pao_terr_plus_other_set_data, path = paste0(tabular_processed_data_path, "/pao_terr_plus_pubs.csv"))
+
+# 1 is from 
+pao_terr_plus_all_but_ag_set_data <- pao_set_data %>%
+  filter(count >= 2) %>%
+  filter(map_lgl(category_list, ~ all(c("terrestrial", "marine", "freshwater", "wwt") %in% .x))) %>%
+  select(uid) %>%
+  left_join(pao_pubs_data, by = "uid") %>%
+  select(-environment, -category) %>%
+  distinct()
 
 # polyp and pao overlaps by category
 # terrestrial
@@ -837,9 +882,22 @@ write_csv(terr_polyp_pao_pubs_data, paste0(tabular_processed_data_path, "/terr_p
 
 # SECTION 6.2
 # 367 is from Table S2 (lake + stream + river + freshwater for polyp)
+# 159 + 62 + 44 + 102
+
 # 52 is from Table S2 (lake + stream + river + freshwater for pao)
+# 11 + 25 + 3 + 13
+
 # 36105 is from Table S2 (lake + stream + river + freshwater for phos)
+# 13421 + 5572 + 10190 + 6922
+
 # 1162 is from Table S2 (lake + stream + river + freshwater for microbio)
+# 189 + 521 + 187 + 265
+
+# 6.5% is from Figure 2D
+
+# 3.6% is from Figure 2D
+
+# 1.9% is from Figure 2D
 
 # polyp freshwater only papers
 polyp_fresh_only_set_data <- polyp_set_data %>%
@@ -881,10 +939,21 @@ dim(fresh_polyp_pao_pubs_data)[1]
 write_csv(fresh_polyp_pao_pubs_data, paste0(tabular_processed_data_path, "/fresh_polyp_pao_pubs.csv"))
 
 # SECTION 6.3
-# 367 is from Table S2 (marine + ocean + saltwater for polyp)
+# 268 is from Table S2 (marine + ocean + saltwater for polyp)
+# 138 + 34 + 96
+
 # 15 is from Table S2 (marine + ocean + saltwater for pao)
+# 6 + 2 + 7
+
 # 9356 is from Table S2 (marine + ocean + saltwater for phos)
+# 4949 + 2419 + 1988
+
 # 757 is from Table S2 (marine + ocean + saltwater for microbio)
+# 488 + 166 + 103
+
+# 2.9% is from Figure 2C
+
+# 1.9% is from Figure 2C
 
 # polyp marine only papers
 polyp_mar_only_set_data <- polyp_set_data %>%
@@ -933,7 +1002,16 @@ write_csv(mar_polyp_pao_pubs_data, paste0(tabular_processed_data_path, "/polyp_p
 
 # SECTION 7
 # 184042 is from Table S2
+
+# 60.7% is from Table S2
+# (9774 + 39597 + 12595 + 13421 + 5572 + 10190 + 6922 + 4949 + 2419 + 1988 + 4429) / 184042 * 100
+# sum(paper_counts_data_frac$count_perc[paper_counts_data_frac$keyword=="phos"])
+
 # 52192 is from Table S2 (soil + sed for phos)
+# 39597 + 12595
+
+# 28.4% is from Table S2
+# 52192 / 184042 * 100
 
 # phos terrestrial only papers
 phos_terr_only_set_data <- phos_set_data %>%
@@ -949,7 +1027,8 @@ dim(phos_terr_only_set_data)[1]
 write_csv(x = phos_terr_only_set_data, path = paste0(tabular_processed_data_path, "/phos_terr_only_pubs.csv"))
 
 # 4429 is from Table S2
-# 14 is from Tabls S2
+
+# 14 is from Table S2
 
 
 # ---- 7.3 plot overlapping journal articles Figure 3 ----
@@ -996,7 +1075,7 @@ figure3d <- ggplot(data = pao_set_data, aes(x = category_unique)) +
 
 # plot together
 # https://cran.r-project.org/web/packages/egg/vignettes/Ecosystem.html
-pdf(paste0(figure_export_path, "/figure_3"), width = 15, height = 10)
+pdf(paste0(figure_export_path, "/figure_3.pdf"), width = 15, height = 10)
 grid.arrange(figure3a, figure3b, figure3c, figure3d, ncol = 2, nrow = 2)
 dev.off()
 
