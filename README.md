@@ -1,8 +1,6 @@
 # paper-pao-review
 
-Data and code repository for the paper titled *A Critical Review of Polyphosphate and Polyphosphate Accumulating Organisms for Agricultural Water Quality Management*.
-
-<Zenodo DOI tag>
+Data and code repository for the paper titled *Critical Review of Polyphosphate and Polyphosphate Accumulating Organisms for Agricultural Water Quality Management*.
 
 This README.md file was generated on 2020-12-10 by Sheila Saia.
 
@@ -14,7 +12,7 @@ This README.md file was generated on 2020-12-10 by Sheila Saia.
 
 **Brief Dataset Description**
 
-This GitHub repository was created to provide access to collected data, analysis code, and other information associated with the paper by Saia et al. titled, *A Critical Review of Polyphosphate and Polyphosphate Accumulating Organisms for Agricultural Water Quality Management* in Environmental Science & Technology (XXXX, preprint: https://eartharxiv.org/repository/view/1132/).
+This GitHub repository was created to provide access to collected data, analysis code, and other information associated with the paper by Saia et al. titled, *Critical Review of Polyphosphate and Polyphosphate Accumulating Organisms for Agricultural Water Quality Management* in Environmental Science & Technology (XXXX, preprint: https://eartharxiv.org/repository/view/1132/).
 
 **Dataset Contact Information**<br>
 Name: Sheila Saia<br>
